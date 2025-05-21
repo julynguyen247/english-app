@@ -14,9 +14,9 @@ import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
 import tw from "twrnc";
 import { useNavigation } from "expo-router";
-import { getAllSongs } from "@/utils/api";
+
 const HomeTab = () => {
-  const [songs, setSongs] = useState<ISong[]>([]);
+  const [topics, setTopics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const currentOffset = useRef(0);
   const [visible, setVisible] = useState(true);
@@ -28,10 +28,10 @@ const HomeTab = () => {
 
     if (diff > 10 && visible) {
       setVisible(false);
-      navigation.setOptions({ tabBarStyle: { display: "none" } });
+      navigation.setOptions?.({ tabBarStyle: { display: "none" } });
     } else if (diff < -10 && !visible) {
       setVisible(true);
-      navigation.setOptions({
+      navigation.setOptions?.({
         tabBarStyle: {
           backgroundColor: "#000",
           borderTopWidth: 0,
@@ -42,18 +42,34 @@ const HomeTab = () => {
 
     currentOffset.current = offsetY;
   };
+
   useEffect(() => {
-    const getSongs = async () => {
-      try {
-        const res = await getAllSongs();
-        setSongs(res.items);
-      } catch (error) {
-        console.error("Error loading songs", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getSongs();
+    const mockTopics = [
+      {
+        id: "1",
+        topic: "Technology",
+        imageUrl: "https://placehold.co/120x100?text=Tech",
+      },
+      {
+        id: "2",
+        topic: "Environment",
+        imageUrl: "https://placehold.co/120x100?text=Env",
+      },
+      {
+        id: "3",
+        topic: "Education",
+        imageUrl: "https://placehold.co/120x100?text=Edu",
+      },
+      {
+        id: "4",
+        topic: "Health",
+        imageUrl: "https://placehold.co/120x100?text=Health",
+      },
+    ];
+    setTimeout(() => {
+      setTopics(mockTopics);
+      setLoading(false);
+    }, 300);
   }, []);
 
   return (
@@ -77,18 +93,20 @@ const HomeTab = () => {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <Text className="flex text-white font-bold text-2xl absolute left-5 top-5">
-                Sing without limits
+              <Text className="text-white font-bold text-2xl absolute left-5 top-5">
+                Learn English Daily
               </Text>
-              <Text className="flex text-white pt-7 mx-5 text-[18px]">
-                Subscribes to unlock full versions of the songs and premium
-                features!
+              <Text className="text-white pt-7 mx-5 text-[18px] text-center">
+                Study vocabulary by topic, improve reading & listening with
+                IELTS lessons!
               </Text>
             </LinearGradient>
 
             <View className="mb-6 pt-8">
               <View className="flex-row justify-between items-center mb-3">
-                <Text className="text-white text-2xl font-bold">Playlists</Text>
+                <Text className="text-white text-2xl font-bold">
+                  Vocabulary Topics
+                </Text>
                 <TouchableOpacity>
                   <Text style={tw`text-[${APP_COLOR.PINK}] font-bold text-xl`}>
                     See All
@@ -101,27 +119,30 @@ const HomeTab = () => {
                 showsHorizontalScrollIndicator={false}
                 className="flex-row pt-3"
               >
-                {songs.slice(0, 10).map((song, i) => (
-                  <View key={i} className="w-[120px] mr-3">
+                {topics.slice(0, 10).map((word, i) => (
+                  <View key={i} className="w-[140px] mr-3">
                     <Image
-                      source={{ uri: song.imageUrl }}
-                      className="w-full h-[120px] rounded-xl mb-2"
+                      source={{ uri: word.imageUrl }}
+                      className="w-full h-[100px] rounded-xl mb-2"
                       resizeMode="cover"
                     />
                     <Text
                       className="text-white font-semibold text-sm"
                       numberOfLines={1}
                     >
-                      {song.albumTitle}
+                      {word.topic}
                     </Text>
                   </View>
                 ))}
               </ScrollView>
             </View>
 
+            {/* Practice Section */}
             <View className="mb-6 mt-7">
               <View className="flex-row justify-between items-center mb-3">
-                <Text className="text-white text-2xl font-bold">Top Songs</Text>
+                <Text className="text-white text-2xl font-bold">
+                  Practice Skills
+                </Text>
                 <TouchableOpacity>
                   <Text style={tw`text-[${APP_COLOR.PINK}] font-bold text-xl`}>
                     See All
@@ -133,20 +154,18 @@ const HomeTab = () => {
                 <ActivityIndicator size="large" color="#fff" />
               ) : (
                 <View className="flex-row flex-wrap justify-between pt-3">
-                  {songs.slice(0, 6).map((song, i) => (
-                    <View key={i} className="w-[48%] mb-4">
-                      <Image
-                        source={{ uri: song.imageUrl }}
-                        className="w-full h-[100px] rounded-xl mb-2"
-                        resizeMode="cover"
-                      />
-                      <Text className="text-white font-bold" numberOfLines={1}>
-                        {song.title}
+                  {["Reading", "Listening"].map((skill, i) => (
+                    <TouchableOpacity
+                      key={i}
+                      className="w-[48%] bg-white/10 p-4 rounded-xl mb-4"
+                    >
+                      <Text className="text-white font-bold text-xl mb-1">
+                        {skill}
                       </Text>
-                      <Text className="text-gray-400 text-sm" numberOfLines={1}>
-                        {song.albumTitle}
+                      <Text className="text-gray-300 text-sm">
+                        Practice your IELTS {skill.toLowerCase()} skills
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
               )}
