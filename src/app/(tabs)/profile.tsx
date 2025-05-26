@@ -3,14 +3,14 @@ import { Text, View } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
-import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
 import { MotiPressable } from "moti/interactions";
 import AnimatedWrapper from "@/components/animation/animate";
 import { getAccountAPI } from "@/utils/api";
+
 const ProfileTab = () => {
-  const navigation = useNavigation();
   const [email, setEmail] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchEmail = async () => {
       try {
@@ -20,68 +20,85 @@ const ProfileTab = () => {
         console.log("Lỗi load profile:", error);
       }
     };
-
     fetchEmail();
   }, []);
 
   return (
     <LinearGradient
-      colors={[APP_COLOR.LIGHT_PINK, APP_COLOR.BLACK]}
+      colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
-      locations={[0, 0.3]}
       style={{ flex: 1 }}
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
-        <View className="px-6 pt-12 flex-1 mb-8">
-          <View className="items-center mb-10">
-            <View className="w-20 h-20 bg-pink-200 rounded-full items-center justify-center">
-              <Ionicons name="person" size={40} color="#000" />
+        <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 48 }}>
+          {/* Avatar */}
+          <View style={{ alignItems: "center", marginBottom: 32 }}>
+            <View
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                backgroundColor: APP_COLOR.LIGHT_BLUE,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="person" size={40} color="#fff" />
             </View>
-            <Text className="text-white font-bold text-xl mt-3">
+            <Text
+              style={{
+                marginTop: 12,
+                fontSize: 18,
+                fontWeight: "bold",
+                color: APP_COLOR.TEXT_PRIMARY,
+              }}
+            >
               {email || "Loading..."}
             </Text>
           </View>
 
-          <View className="space-y-3">
+          {/* Options */}
+          <View style={{ gap: 12 }}>
             <MotiPressable
               from={{ scale: 1 }}
-              animate={({ pressed }) => ({
-                scale: pressed ? 0.95 : 1,
-              })}
+              animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
               transition={{ type: "timing", duration: 150 }}
               onPress={() => router.push("/record")}
               style={{
-                backgroundColor: "#171717",
-                paddingHorizontal: 16,
-                paddingVertical: 16,
+                backgroundColor: "#fff",
+                padding: 16,
                 borderRadius: 12,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: 5,
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Ionicons name="mic-outline" size={20} color="white" />
-                <Text style={{ color: "white", marginLeft: 12 }}>
+                <Ionicons
+                  name="mic-outline"
+                  size={20}
+                  color={APP_COLOR.TEXT_PRIMARY}
+                />
+                <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
                   Your Recordings
                 </Text>
               </View>
-              <Feather name="chevron-right" size={20} color="white" />
+              <Feather
+                name="chevron-right"
+                size={20}
+                color={APP_COLOR.TEXT_PRIMARY}
+              />
             </MotiPressable>
 
             <MotiPressable
               from={{ scale: 1 }}
-              animate={({ pressed }) => ({
-                scale: pressed ? 0.95 : 1,
-              })}
+              animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
               transition={{ type: "timing", duration: 150 }}
               onPress={() => router.push("/playlist")}
               style={{
-                backgroundColor: "#171717",
-                paddingHorizontal: 16,
-                paddingVertical: 16,
+                backgroundColor: "#fff",
+                padding: 16,
                 borderRadius: 12,
                 flexDirection: "row",
                 alignItems: "center",
@@ -92,32 +109,41 @@ const ProfileTab = () => {
                 <Ionicons
                   name="musical-notes-outline"
                   size={20}
-                  color="white"
+                  color={APP_COLOR.TEXT_PRIMARY}
                 />
-                <Text style={{ color: "white", marginLeft: 12 }}>
+                <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
                   Your Playlists
                 </Text>
               </View>
-              <Feather name="chevron-right" size={20} color="white" />
+              <Feather
+                name="chevron-right"
+                size={20}
+                color={APP_COLOR.TEXT_PRIMARY}
+              />
             </MotiPressable>
           </View>
 
-          <View className="mt-auto mb-10">
+          {/* Log out */}
+          <View style={{ marginTop: "auto", marginBottom: 32 }}>
             <MotiPressable
               from={{ scale: 1 }}
-              animate={({ pressed }) => ({
-                scale: pressed ? 0.95 : 1,
-              })}
+              animate={({ pressed }) => ({ scale: pressed ? 0.95 : 1 })}
               transition={{ type: "timing", duration: 150 }}
               onPress={() => console.log("Log out")}
               style={{
-                backgroundColor: "#171717",
-                paddingVertical: 12,
+                backgroundColor: "#fff",
+                paddingVertical: 14,
                 borderRadius: 16,
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#f87171", fontWeight: "bold" }}>
+              <Text
+                style={{
+                  color: APP_COLOR.RED,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                }}
+              >
                 Log out
               </Text>
             </MotiPressable>

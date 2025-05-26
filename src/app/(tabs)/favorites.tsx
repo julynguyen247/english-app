@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, ScrollView } from "react-native";
+import { View, Text, TextInput, ScrollView, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
@@ -14,38 +14,85 @@ const FavoritesTab = () => {
 
   return (
     <LinearGradient
-      colors={[APP_COLOR.LIGHT_PINK, APP_COLOR.BLACK]}
+      colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
-      locations={[0, 0.3]}
       style={{ flex: 1 }}
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
-        <ScrollView className="flex-1 px-4 pt-8">
-          <View className="flex-row items-center bg-white/20 px-4 py-2 rounded-xl mb-6">
-                <Ionicons
-                  name="search"
-                  size={20}
-                  color="white"
-                  className="mr-2"
-                />
-                <TextInput
-                  placeholder="Find your favorite songs..."
-                  placeholderTextColor="#eee"
-                  className="flex-1 text-white"
-                />
-            </View>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 32 }}>
+          {/* Search Bar */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#F5F5F5",
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          >
+            <Ionicons
+              name="search"
+              size={20}
+              color="#555"
+              style={{ marginRight: 8 }}
+            />
+            <TextInput
+              placeholder="Find your favorite songs..."
+              placeholderTextColor="#999"
+              style={{ flex: 1, fontSize: 16, color: APP_COLOR.TEXT_PRIMARY }}
+            />
+          </View>
 
-          <View className="mt-5">
+          {/* Song List */}
+          <View>
             {songs.map((item) => (
               <View
                 key={item.id}
-                className="flex-row items-center mb-5 border-b border-white/10 pb-4"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "#FFFFFF",
+                  padding: 12,
+                  borderRadius: 12,
+                  marginBottom: 16,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 3,
+                  elevation: 2,
+                }}
               >
-                <View className="w-16 h-16 bg-gray-400 rounded-lg mr-4" />
-                <View className="flex-1">
-                  <Text className="text-white font-bold">{item.name}</Text>
-                  <Text className="text-gray-400 text-sm">{item.artist}</Text>
+                <View
+                  style={{
+                    width: 56,
+                    height: 56,
+                    backgroundColor: APP_COLOR.LIGHT_BLUE,
+                    borderRadius: 8,
+                    marginRight: 12,
+                  }}
+                />
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: APP_COLOR.TEXT_PRIMARY,
+                      fontWeight: "bold",
+                      fontSize: 16,
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                  <Text
+                    style={{
+                      color: APP_COLOR.TEXT_SECONDARY,
+                      fontSize: 13,
+                      marginTop: 2,
+                    }}
+                  >
+                    {item.artist}
+                  </Text>
                 </View>
               </View>
             ))}

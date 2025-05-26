@@ -1,120 +1,123 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { APP_COLOR } from "@/utils/constant";
 import { Redirect } from "expo-router";
-import tw from "twrnc"; 
+import tw from "twrnc";
+
+const { height } = Dimensions.get("window");
 
 const Logo = require("@/assets/auth/Logo/Manoke.png");
-const im1 = require("@/assets/auth/Image/im1.jpg");
-const im2 = require("@/assets/auth/Image/im2.jpg");
-const im3 = require("@/assets/auth/Image/im3.jpg");
-const im4 = require("@/assets/auth/Image/im4.jpg");
+const Illustration = require("@/assets/auth/Image/im3.jpg");
 
 const LoginPage = () => {
   const [redirectToSignIn, setRedirectToSignIn] = React.useState(false);
   const [redirectToSignUp, setRedirectToSignUp] = React.useState(false);
 
-  if (redirectToSignIn) {
-    return <Redirect href="/(auth)/signin" />;
-  }
-
-  if (redirectToSignUp) {
-    return <Redirect href="/(auth)/signup" />;
-  }
+  if (redirectToSignIn) return <Redirect href="/(auth)/signin" />;
+  if (redirectToSignUp) return <Redirect href="/(auth)/signup" />;
 
   return (
-    <SafeAreaView style={tw`flex-1 flex-row justify-center`}>
-      <LinearGradient
-        colors={[APP_COLOR.DARK_PURPLE, APP_COLOR.BLACK, APP_COLOR.DARK_PURPLE]}
-        style={tw`flex-1 justify-center`}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        locations={[0, 0.5, 1]}
-      >
-        <View style={tw`flex-1 items-center p-[91px]`}>
-          <LinearGradient
-            colors={[APP_COLOR.PURPLE, APP_COLOR.PINK]}
-            style={tw`w-[247px] h-[169px] justify-center items-center`}
-          >
-            <MotiView
-              from={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "timing", duration: 2500 }}
-            >
-              <Image source={Logo} />
-            </MotiView>
-          </LinearGradient>
-        </View>
-
-        <View style={tw`absolute top-[70px] left-[40px] w-[74px] h-[74px] rounded-[10px]`}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: APP_COLOR.BACKGROUND }}>
+      <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 24 }}>
+        {/* Logo & Illustration */}
+        <View style={{ alignItems: "center" }}>
           <MotiView
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ type: "timing", duration: 1500, loop: true }}
+            from={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "timing", duration: 1500 }}
+            style={{ alignItems: "center", marginBottom: 16 }}
           >
-            <Image source={im1} style={tw`w-[74px] h-[74px] rounded-[10px]`} />
+            <Image
+              source={Logo}
+              style={{ width: 180, height: 60, resizeMode: "contain" }}
+            />
           </MotiView>
+          <Image
+            source={Illustration}
+            style={{
+              width: "100%",
+              height: height * 0.35,
+              borderRadius: 20,
+              marginTop: 20,
+              resizeMode: "cover",
+            }}
+          />
         </View>
 
-        <View style={tw`absolute top-[75px] right-[50px] w-[61px] h-[61px] rounded-[10px]`}>
-          <MotiView
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ type: "timing", duration: 1500, loop: true }}
+        {/* Text & Actions */}
+        <View style={{ marginTop: 32, alignItems: "center" }}>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              color: APP_COLOR.TEXT_PRIMARY,
+              textAlign: "center",
+            }}
           >
-            <Image source={im2} style={tw`w-[61px] h-[61px] rounded-[10px]`} />
-          </MotiView>
-        </View>
-
-        <View style={tw`absolute top-[200px] left-[20px] w-[100px] h-[100px] rounded-[10px]`}>
-          <MotiView
-            animate={{ scale: [1, 0.8, 1] }}
-            transition={{ type: "timing", duration: 1500, loop: true }}
-          >
-            <Image source={im3} style={tw`w-[100px] h-[100px] rounded-[10px]`} />
-          </MotiView>
-        </View>
-
-        <View style={tw`absolute top-[220px] right-[40px] w-[74px] h-[74px] rounded-[10px]`}>
-          <MotiView
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ type: "timing", duration: 1500, loop: true }}
-          >
-            <Image source={im4} style={tw`w-[74px] h-[74px] rounded-[10px]`} />
-          </MotiView>
-        </View>
-
-        <View style={tw`absolute top-[270px] left-[20px] p-[50px] justify-center items-center w-[90%]`}>
-          <Text style={tw`text-white text-[22px] font-bold text-center mt-5 font-roboto`}>
-            Can't stop singing.
+            Learn English the Smart Way
           </Text>
-          <Text style={tw`text-white text-[17px] text-center mt-5 font-roboto w-[300px]`}>
-            Explore a vast catalog of songs, with new tracks added daily to update your playlist with the latest hits.
+          <Text
+            style={{
+              fontSize: 16,
+              color: APP_COLOR.TEXT_SECONDARY,
+              textAlign: "center",
+              marginTop: 12,
+              lineHeight: 22,
+              width: "90%",
+            }}
+          >
+            Improve your vocabulary, reading & listening skills with daily
+            practice, quizzes, and topic-based lessons.
           </Text>
-        </View>
 
-        <View style={tw`absolute bottom-[170px] left-[20px] w-[90%] items-center`}>
-          <TouchableOpacity 
-            style={tw`bg-[${APP_COLOR.PINK}] rounded-[10px] py-[15px] px-[30px] w-[70%] items-center`}
+          <TouchableOpacity
+            style={{
+              marginTop: 40,
+              backgroundColor: APP_COLOR.PRIMARY_BLUE,
+              paddingVertical: 14,
+              paddingHorizontal: 32,
+              borderRadius: 10,
+              width: "80%",
+              alignItems: "center",
+            }}
             onPress={() => setRedirectToSignUp(true)}
           >
-            <Text style={tw`text-white text-[22px] font-bold font-roboto`}>
+            <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
               Sign Up
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={tw`bg-[${APP_COLOR.PURPLE}] rounded-[10px] py-[15px] px-[30px] w-[70%] items-center mt-5`}
+
+          <TouchableOpacity
+            style={{
+              marginTop: 16,
+              backgroundColor: "#fff",
+              borderColor: APP_COLOR.PRIMARY_BLUE,
+              borderWidth: 1.5,
+              paddingVertical: 14,
+              paddingHorizontal: 32,
+              borderRadius: 10,
+              width: "80%",
+              alignItems: "center",
+            }}
             onPress={() => setRedirectToSignIn(true)}
           >
-            <Text style={tw`text-white text-[22px] font-bold font-roboto`}>
+            <Text
+              style={{
+                color: APP_COLOR.PRIMARY_BLUE,
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
               Sign In
             </Text>
           </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
 
-export default LoginPage; 
+export default LoginPage;
