@@ -13,9 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { APP_COLOR } from "@/utils/constant";
 import { useRouter } from "expo-router";
 import tw from "twrnc";
-import { loginAPI } from "@/utils/api";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { login } from "@/utils/api";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
@@ -38,37 +38,47 @@ const SignIn = () => {
   const isButtonActive = username.length > 0 && password.length > 0;
 
   const handleSignIn = async () => {
-    router.replace("/(tabs)/home");
-    // try {
-    //   const response = await loginAPI(username, password);
-    //   console.log("Login API response: ", response);
-    //   if (response?.accessToken) {
-    //     await AsyncStorage.setItem("access_token", response.accessToken);
+    if (!username || !password) {
+      Toast.show({
+        type: "error",
+        text1: "Thiếu thông tin",
+        text2: "Vui lòng nhập đầy đủ tài khoản và mật khẩu",
+      });
+      return;
+    }
 
-    //     Toast.show({
-    //       type: "success",
-    //       text1: "Success",
-    //       text2: "Logged in successfully!",
-    //     });
+    try {
+      const response = await login(username, password);
 
-    //     setTimeout(() => {
-    //       router.replace("/(tabs)/home");
-    //     }, 1000);
-    //   } else {
-    //     Toast.show({
-    //       type: "error",
-    //       text1: "Failed",
-    //       text2: "Login Failed!",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.log("Login error: ", error);
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Error",
-    //     text2: "Something went wrong!",
-    //   });
-    // }
+      if (response?.data?.accessToken) {
+        await AsyncStorage.setItem("access_token", response.data.accessToken);
+
+        Toast.show({
+          type: "success",
+          text1: "Đăng nhập thành công",
+        });
+
+        setTimeout(() => {
+          router.replace("/(tabs)/home");
+        }, 1000);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Đăng nhập thất bại",
+          text2: response?.data?.message || "Sai tài khoản hoặc mật khẩu",
+        });
+      }
+    } catch (error: any) {
+      console.error("Login error: ", error);
+      Toast.show({
+        type: "error",
+        text1: "Lỗi đăng nhập",
+        text2:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Có lỗi xảy ra khi đăng nhập.",
+      });
+    }
   };
 
   return (

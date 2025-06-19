@@ -14,6 +14,7 @@ import { APP_COLOR } from "@/utils/constant";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
+import { signUpSendOtpAPI } from "@/utils/api";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
@@ -32,6 +33,31 @@ const SignUp = () => {
       useNativeDriver: true,
     }).start();
   }, []);
+  const handleSendOtp = async () => {
+    if (!email) {
+      Toast.show({ type: "error", text1: "Email không được để trống" });
+      return;
+    }
+
+    try {
+      await signUpSendOtpAPI(email, passcode, passcode);
+      Toast.show({
+        type: "success",
+        text1: "OTP đã được gửi đến email của bạn",
+      });
+      router.push({
+        pathname: "./signup2",
+        params: { email, passcode },
+      });
+    } catch (err: any) {
+      console.error(err);
+      Toast.show({
+        type: "error",
+        text1: "Gửi OTP thất bại",
+        text2: err?.response?.data?.message || "Đã xảy ra lỗi",
+      });
+    }
+  };
 
   const isButtonActive = email.length > 0 && passcode.length > 0;
 
@@ -96,7 +122,7 @@ const SignUp = () => {
               value={email}
               onChangeText={setEmail}
             />
-            <TouchableOpacity style={tw`mb-5`}>
+            <TouchableOpacity style={tw`mb-5`} onPress={handleSendOtp}>
               <Text
                 style={{
                   fontSize: 13,
