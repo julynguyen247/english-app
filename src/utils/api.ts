@@ -29,3 +29,19 @@ export const resetPass = (
   const url = `/api/Authentication/resetpassword`;
   return axios.post(url, { email, resetCode, newPassword });
 };
+export const sendResetPasswordCodeAPI = (email: string) => {
+  const url = "/api/Authentication/sendresetpasswordcode";
+  return axios.post(url, { email });
+};
+export const resetPasswordAPI = (
+  email: string,
+  resetCode: string,
+  newPassword: string
+) => {
+  const url = "/api/Authentication/resetpassword";
+  return axios.post(url, {
+    email,
+    resetCode,
+    newPassword,
+  });
+};

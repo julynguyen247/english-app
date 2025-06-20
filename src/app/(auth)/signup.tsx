@@ -14,17 +14,19 @@ import { APP_COLOR } from "@/utils/constant";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { signUpSendOtpAPI } from "@/utils/api";
+import { signUpSendOtpAPI } from "@/utils/api"; // ✅ API đã ghi nhớ
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
 const avatar = require("@/assets/auth/Icon/avatar.png");
 
 const SignUp = () => {
-  const slideAnim = useRef(new Animated.Value(-modalHeight)).current;
+  const slideAnim = useRef(new Animated.Value(modalHeight)).current;
   const [email, setEmail] = useState("");
-  const [passcode, setPasscode] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -33,33 +35,53 @@ const SignUp = () => {
       useNativeDriver: true,
     }).start();
   }, []);
-  const handleSendOtp = async () => {
-    if (!email) {
-      Toast.show({ type: "error", text1: "Email không được để trống" });
+
+  const handleSignUp = async () => {
+    if (!email || !password || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Vui lòng nhập đầy đủ thông tin",
+      });
       return;
     }
 
-    try {
-      await signUpSendOtpAPI(email, passcode, passcode);
-      Toast.show({
-        type: "success",
-        text1: "OTP đã được gửi đến email của bạn",
-      });
-      router.push({
-        pathname: "./signup2",
-        params: { email, passcode },
-      });
-    } catch (err: any) {
-      console.error(err);
+    if (password !== confirmPassword) {
       Toast.show({
         type: "error",
-        text1: "Gửi OTP thất bại",
-        text2: err?.response?.data?.message || "Đã xảy ra lỗi",
+        text1: "Lỗi",
+        text2: "Mật khẩu không khớp",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const res = await signUpSendOtpAPI(email, password, confirmPassword);
+    if (res && res.success === true) {
+      Toast.show({
+        type: "success",
+        text1: "Thành công",
+        text2: res.message || "Đã gửi OTP đến email",
+      });
+      setTimeout(() => {
+        router.push({
+          pathname: "/(auth)/otpverify",
+          params: { email },
+        });
+      }, 1000);
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Thất bại",
+        text2: res.message || "Không thể OTP đến email",
       });
     }
+
+    setIsLoading(false);
   };
 
-  const isButtonActive = email.length > 0 && passcode.length > 0;
+  const isButtonActive =
+    email.length > 0 && password.length > 0 && confirmPassword.length > 0;
 
   return (
     <SafeAreaView style={tw`flex-1`}>
@@ -76,7 +98,7 @@ const SignUp = () => {
               width: "100%",
               height: modalHeight,
               backgroundColor: "#FFFFFF",
-              bottom: slideAnim,
+              transform: [{ translateY: slideAnim }],
               left: 0,
             },
             tw`rounded-t-3xl items-center justify-start`,
@@ -102,7 +124,7 @@ const SignUp = () => {
                 color: APP_COLOR.TEXT_SECONDARY,
               }}
             >
-              Enter your email to receive a passcode.
+              Create your account below
             </Text>
           </View>
 
@@ -122,21 +144,10 @@ const SignUp = () => {
               value={email}
               onChangeText={setEmail}
             />
-            <TouchableOpacity style={tw`mb-5`} onPress={handleSendOtp}>
-              <Text
-                style={{
-                  fontSize: 13,
-                  fontWeight: "600",
-                  textDecorationLine: "underline",
-                  color: APP_COLOR.PRIMARY_BLUE,
-                }}
-              >
-                Send Passcode
-              </Text>
-            </TouchableOpacity>
 
             <TextInput
-              placeholder="Passcode"
+              placeholder="Password"
+              secureTextEntry
               style={{
                 width: "85%",
                 height: 50,
@@ -147,14 +158,32 @@ const SignUp = () => {
                 color: APP_COLOR.TEXT_PRIMARY,
               }}
               placeholderTextColor={"#999"}
-              value={passcode}
-              onChangeText={setPasscode}
+              value={password}
+              onChangeText={setPassword}
+            />
+
+            <TextInput
+              placeholder="Confirm Password"
+              secureTextEntry
+              style={{
+                width: "85%",
+                height: 50,
+                backgroundColor: "#F5F5F5",
+                borderRadius: 10,
+                paddingHorizontal: 16,
+                marginBottom: 12,
+                color: APP_COLOR.TEXT_PRIMARY,
+              }}
+              placeholderTextColor={"#999"}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
           </View>
 
           <View style={tw`w-full items-center mt-5`}>
             <TouchableOpacity
-              onPress={() => router.push("./signup2")}
+              onPress={handleSignUp}
+              disabled={!isButtonActive || isLoading}
               style={{
                 width: "80%",
                 height: 50,
@@ -167,7 +196,7 @@ const SignUp = () => {
               }}
             >
               <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                Next
+                {isLoading ? "Đang gửi..." : "Next"}
               </Text>
             </TouchableOpacity>
 

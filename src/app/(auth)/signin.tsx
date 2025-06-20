@@ -16,6 +16,7 @@ import tw from "twrnc";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "@/utils/api";
+import * as WebBrowser from "expo-web-browser";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
@@ -26,7 +27,8 @@ const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  const googleLogo = require("@/assets/auth/Icon/google.png");
+  const facebookLogo = require("@/assets/auth/Icon/fb.png");
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: 0,
@@ -47,38 +49,46 @@ const SignIn = () => {
       return;
     }
 
-    try {
-      const response = await login(username, password);
-
-      if (response?.data?.accessToken) {
-        await AsyncStorage.setItem("access_token", response.data.accessToken);
-
-        Toast.show({
-          type: "success",
-          text1: "Đăng nhập thành công",
-        });
-
-        setTimeout(() => {
-          router.replace("/(tabs)/home");
-        }, 1000);
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Đăng nhập thất bại",
-          text2: response?.data?.message || "Sai tài khoản hoặc mật khẩu",
-        });
-      }
-    } catch (error: any) {
-      console.error("Login error: ", error);
+    const response = await login(username, password);
+    if (response?.success === true) {
+      await AsyncStorage.setItem("access_token", response.data);
+      Toast.show({ type: "success", text1: "Đăng nhập thành công" });
+      setTimeout(() => router.replace("/(tabs)/home"), 1000);
+    } else {
       Toast.show({
         type: "error",
-        text1: "Lỗi đăng nhập",
-        text2:
-          error?.response?.data?.message ||
-          error?.message ||
-          "Có lỗi xảy ra khi đăng nhập.",
+        text1: "Đăng nhập thất bại",
+        text2: "Sai tài khoản hoặc mật khẩu",
       });
     }
+  };
+
+  const handleOAuthLogin = async (provider: "google" | "facebook") => {
+    const redirectUrl = "myapp://redirect";
+    const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+    const url =
+      provider === "google"
+        ? `${baseUrl}/api/Authentication/signin-google?returnUrl=/api/Authentication/profile`
+        : `${baseUrl}/api/Authentication/login-facebook`;
+
+    const result = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
+
+    if (result.type !== "success" || !result.url.includes("access_token")) {
+      Toast.show({ type: "error", text1: `Đăng nhập ${provider} thất bại` });
+      return;
+    }
+
+    const tokenMatch = result.url.match(/access_token=([^&]+)/);
+    const token = tokenMatch ? tokenMatch[1] : null;
+
+    if (!token) {
+      Toast.show({ type: "error", text1: "Token không hợp lệ" });
+      return;
+    }
+
+    await AsyncStorage.setItem("access_token", token);
+    Toast.show({ type: "success", text1: `Đăng nhập ${provider} thành công` });
+    setTimeout(() => router.replace("/(tabs)/home"), 1000);
   };
 
   return (
@@ -93,11 +103,11 @@ const SignIn = () => {
           style={[
             {
               position: "absolute",
+              bottom: 0,
               width: "100%",
               height: modalHeight,
-              backgroundColor: "#FFFFFF",
-              bottom: slideAnim,
-              left: 0,
+              backgroundColor: "#F3F2F8",
+              transform: [{ translateY: slideAnim }],
             },
             tw`rounded-t-3xl items-center justify-start`,
           ]}
@@ -159,7 +169,9 @@ const SignIn = () => {
               value={password}
               onChangeText={setPassword}
             />
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/forgotpassword")}
+            >
               <Text
                 style={{
                   fontSize: 13,
@@ -191,15 +203,63 @@ const SignIn = () => {
               </Text>
             </TouchableOpacity>
 
+            <View style={tw`w-full items-center mt-6`}>
+              <Text style={{ fontSize: 14, color: "#888" }}>Or</Text>
+
+              <TouchableOpacity
+                onPress={() => handleOAuthLogin("google")}
+                style={{
+                  width: "80%",
+                  height: 50,
+                  borderRadius: 10,
+                  backgroundColor: "#ccc",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  marginTop: 12,
+                }}
+              >
+                <Image
+                  source={googleLogo}
+                  style={{ width: 20, height: 20, marginRight: 10 }}
+                />
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                  Login with Google
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleOAuthLogin("facebook")}
+                style={{
+                  width: "80%",
+                  height: 50,
+                  borderRadius: 10,
+                  backgroundColor: "#4267B2",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  marginTop: 12,
+                }}
+              >
+                <Image
+                  source={facebookLogo}
+                  style={{ width: 20, height: 20, marginRight: 10 }}
+                />
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                  Login with Facebook
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity onPress={() => router.push("/signup")}>
               <Text
                 style={{
                   fontSize: 14,
-                  marginTop: 12,
+                  marginTop: 16,
                   color: APP_COLOR.PRIMARY_BLUE,
                 }}
               >
-                No Manoke Account?
+                No Account?
               </Text>
             </TouchableOpacity>
           </View>

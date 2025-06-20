@@ -22,7 +22,6 @@ const LoginPage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: APP_COLOR.BACKGROUND }}>
       <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 24 }}>
-        {/* Logo & Illustration */}
         <View style={{ alignItems: "center" }}>
           <MotiView
             from={{ scale: 0.8, opacity: 0 }}
@@ -46,8 +45,6 @@ const LoginPage = () => {
             }}
           />
         </View>
-
-        {/* Text & Actions */}
         <View style={{ marginTop: 32, alignItems: "center" }}>
           <Text
             style={{
