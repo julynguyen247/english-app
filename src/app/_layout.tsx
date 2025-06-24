@@ -100,6 +100,20 @@ const RootLayout = () => {
             gestureEnabled: true,
           }}
         />
+        <Stack.Screen
+          name="(user)/lessons"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/exercises"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
       </Stack>
       <Toast />
     </AppProvider>

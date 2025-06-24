@@ -27,20 +27,27 @@ declare global {
     adminSecret?: string;
   }
 
-  export interface ISong {
-    title: string;
-    albumTitle: string;
-    imageUrl: string;
-    releasedDate: Date;
-    duration: number;
-    youtubeUrl: string;
-    spotifyUrl: string;
-    artistIds: string[];
-    playlistIds: string[];
-    scoreIds: string[];
+  export interface ICategory {
+    categoryId: number;
+    categoryName: string;
+    categoryDescription: string;
+    lessons: any;
   }
-  export interface IPaginatedSongs {
-    items: ISong[];
-    meta: IPaginationMeta;
+  export interface ILesson {
+    lessonId: number;
+    title: string;
+    description: string;
+    level: string;
+    imageUrl: string;
+    createdAt: string;
+    updatedAt: string;
+    categoryId: number;
+  }
+  export interface IExercise {
+    exerciseId: number;
+    lessonId: number;
+    type: string;
+    question: string;
+    explanation: string;
   }
 }

@@ -45,3 +45,17 @@ export const resetPasswordAPI = (
     newPassword,
   });
 };
+export const getCategoriesAPI = () => {
+  return axios.get("/api/categories");
+};
+export const getLessonsByCategoryAPI = (categoryId: number, level: string) => {
+  return axios.get<ILesson[]>("/api/lessons", {
+    params: {
+      categoryId,
+      level,
+    },
+  });
+};
+export const getExercisesByLessonIdAPI = (lessonId: number) => {
+  return axios.get(`/api/exercises/${lessonId}`);
+};
