@@ -14,7 +14,7 @@ import { APP_COLOR } from "@/utils/constant";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { signUpSendOtpAPI } from "@/utils/api"; // ✅ API đã ghi nhớ
+import { signUpSendOtpAPI } from "@/utils/api";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
@@ -40,8 +40,8 @@ const SignUp = () => {
     if (!email || !password || !confirmPassword) {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: "Vui lòng nhập đầy đủ thông tin",
+        text1: "Missing information",
+        text2: "Please fill in all required fields.",
       });
       return;
     }
@@ -49,20 +49,22 @@ const SignUp = () => {
     if (password !== confirmPassword) {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: "Mật khẩu không khớp",
+        text1: "Password mismatch",
+        text2: "Passwords do not match.",
       });
       return;
     }
 
     setIsLoading(true);
     const res = await signUpSendOtpAPI(email, password, confirmPassword);
+
     if (res && res.success === true) {
       Toast.show({
         type: "success",
-        text1: "Thành công",
-        text2: res.message || "Đã gửi OTP đến email",
+        text1: "Success",
+        text2: res.message || "OTP sent to your email",
       });
+
       setTimeout(() => {
         router.push({
           pathname: "/(auth)/otpverify",
@@ -72,8 +74,8 @@ const SignUp = () => {
     } else {
       Toast.show({
         type: "error",
-        text1: "Thất bại",
-        text2: res.message || "Không thể OTP đến email",
+        text1: "Failed",
+        text2: res.message || "Failed to send OTP",
       });
     }
 
@@ -196,7 +198,7 @@ const SignUp = () => {
               }}
             >
               <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                {isLoading ? "Đang gửi..." : "Next"}
+                {isLoading ? "Sending..." : "Next"}
               </Text>
             </TouchableOpacity>
 
@@ -208,7 +210,7 @@ const SignUp = () => {
                   color: APP_COLOR.PRIMARY_BLUE,
                 }}
               >
-                Already Have An Account?
+                Already have an account?
               </Text>
             </TouchableOpacity>
           </View>

@@ -31,19 +31,19 @@ const TabLayout = () => {
           name: "home",
           label: "Home",
           icon: ["home-variant", "home-variant-outline"],
-          title: "Discover",
+          title: "Home",
         },
         {
-          name: "card",
-          label: "Cards",
+          name: "deck",
+          label: "Decks",
           icon: ["book-search", "book-search-outline"],
-          title: "Topics",
+          title: "Decks",
         },
         {
           name: "practice",
           label: "Practice",
           icon: ["clipboard-text", "clipboard-text-outline"],
-          title: "Training",
+          title: "Practice",
         },
         {
           name: "history",
@@ -55,7 +55,7 @@ const TabLayout = () => {
           name: "profile",
           label: "Profile",
           icon: ["account-circle", "account-circle-outline"],
-          title: "",
+          title: "Profile",
         },
       ].map(({ name, label, icon, title }) => (
         <Tabs.Screen
@@ -67,11 +67,11 @@ const TabLayout = () => {
               title ? (
                 <Text
                   style={{
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: "bold",
                     color: APP_COLOR.TEXT_PRIMARY,
-                    paddingTop: 60,
-                    marginBottom: 30,
+                    padding: 10,
+                    marginBottom: 4,
                   }}
                 >
                   {title}
@@ -79,15 +79,7 @@ const TabLayout = () => {
               ) : (
                 ""
               ),
-            headerRight: () => (
-              <MaterialCommunityIcons
-                name="cog-outline"
-                size={24}
-                color={APP_COLOR.TEXT_PRIMARY}
-                style={{ marginRight: 16 }}
-                onPress={() => router.push("/(setting)/setting")}
-              />
-            ),
+
             headerShadowVisible: false,
             headerStyle: {
               backgroundColor: APP_COLOR.BACKGROUND,

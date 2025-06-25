@@ -40,8 +40,8 @@ const OtpVerify = () => {
     if (!otp) {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: "Vui lòng nhập mã OTP!",
+        text1: "Error",
+        text2: "Please enter the OTP code.",
       });
       return;
     }
@@ -53,21 +53,21 @@ const OtpVerify = () => {
       const res = await signUpReceiveOtpAPI(email, otp);
       Toast.show({
         type: "success",
-        text1: "Thành công",
-        text2: res.data?.message || "Xác minh OTP thành công!",
+        text1: "Success",
+        text2: res.data?.message || "OTP verified successfully!",
       });
 
       setTimeout(() => {
         router.replace("/signin");
       }, 1000);
     } catch (error: any) {
-      let errorMessage = "Xác minh OTP thất bại.";
+      let errorMessage = "OTP verification failed.";
       if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
       Toast.show({
         type: "error",
-        text1: "Lỗi",
+        text1: "Error",
         text2: errorMessage,
       });
     } finally {
@@ -111,7 +111,7 @@ const OtpVerify = () => {
               marginBottom: 16,
             }}
           >
-            Nhập OTP
+            Enter OTP
           </Text>
           <Text
             style={{
@@ -122,12 +122,12 @@ const OtpVerify = () => {
               color: APP_COLOR.TEXT_SECONDARY,
             }}
           >
-            Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng nhập mã bên
-            dưới.
+            We've sent a one-time password (OTP) to your email. Please enter the
+            code below.
           </Text>
 
           <TextInput
-            placeholder="Nhập OTP"
+            placeholder="Enter OTP"
             style={tw`w-[80%] h-[50px] bg-white rounded-lg my-10 px-4 text-center text-lg`}
             placeholderTextColor={"#A0A0A0"}
             value={otp}
@@ -151,7 +151,7 @@ const OtpVerify = () => {
             ]}
           >
             <Text style={tw`text-white text-lg font-bold`}>
-              {isLoading ? "Đang xác minh..." : "Xác minh OTP"}
+              {isLoading ? "Verifying..." : "Verify OTP"}
             </Text>
           </TouchableOpacity>
         </Animated.View>

@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -46,8 +47,8 @@ const SignIn = () => {
     if (!username || !password) {
       Toast.show({
         type: "error",
-        text1: "Thiếu thông tin",
-        text2: "Vui lòng nhập đầy đủ tài khoản và mật khẩu",
+        text1: "Missing information",
+        text2: "Please enter both username and password.",
       });
       return;
     }
@@ -56,13 +57,13 @@ const SignIn = () => {
     const response = await login(username, password);
     if (response?.success === true) {
       await AsyncStorage.setItem("access_token", response.data);
-      Toast.show({ type: "success", text1: "Đăng nhập thành công" });
+      Toast.show({ type: "success", text1: "Login successful" });
       setTimeout(() => router.replace("/(tabs)/home"), 1000);
     } else {
       Toast.show({
         type: "error",
-        text1: "Đăng nhập thất bại",
-        text2: "Sai tài khoản hoặc mật khẩu",
+        text1: "Login failed",
+        text2: "Incorrect username or password",
       });
     }
     setIsLoading(false);
@@ -84,7 +85,7 @@ const SignIn = () => {
     const result = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
 
     if (result.type !== "success" || !result.url.includes("access_token")) {
-      Toast.show({ type: "error", text1: `Đăng nhập ${provider} thất bại` });
+      Toast.show({ type: "error", text1: `Login with ${provider} failed` });
       return;
     }
 
@@ -92,12 +93,12 @@ const SignIn = () => {
     const token = tokenMatch ? tokenMatch[1] : null;
 
     if (!token) {
-      Toast.show({ type: "error", text1: "Token không hợp lệ" });
+      Toast.show({ type: "error", text1: "Invalid token" });
       return;
     }
 
     await AsyncStorage.setItem("access_token", token);
-    Toast.show({ type: "success", text1: `Đăng nhập ${provider} thành công` });
+    Toast.show({ type: "success", text1: `Login with ${provider} successful` });
     setTimeout(() => router.replace("/(tabs)/home"), 1000);
   };
 
@@ -189,7 +190,7 @@ const SignIn = () => {
                   color: APP_COLOR.PRIMARY_BLUE,
                 }}
               >
-                Password Lost?
+                Forgot Password?
               </Text>
             </TouchableOpacity>
           </View>
@@ -209,11 +210,15 @@ const SignIn = () => {
               onPress={handleSignIn}
               disabled={isLoading}
             >
-              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                {isLoading
-                  ? "\u0110ang \u0111\u0103ng nh\u1eadp..."
-                  : "Sign In"}
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text
+                  style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}
+                >
+                  Sign In
+                </Text>
+              )}
             </TouchableOpacity>
 
             <View style={tw`w-full items-center mt-6`}>
@@ -236,7 +241,7 @@ const SignIn = () => {
                   style={{ width: 20, height: 20, marginRight: 10 }}
                 />
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Login with Google
+                  Sign in with Google
                 </Text>
               </TouchableOpacity>
 
@@ -258,7 +263,7 @@ const SignIn = () => {
                   style={{ width: 20, height: 20, marginRight: 10 }}
                 />
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Login with Facebook
+                  Sign in with Facebook
                 </Text>
               </TouchableOpacity>
             </View>
@@ -271,7 +276,7 @@ const SignIn = () => {
                   color: APP_COLOR.PRIMARY_BLUE,
                 }}
               >
-                No Account?
+                Don’t have an account?
               </Text>
             </TouchableOpacity>
           </View>

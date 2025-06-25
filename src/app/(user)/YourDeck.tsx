@@ -38,11 +38,11 @@ const DeckScreen = () => {
         count: 0,
       };
       setDecks((prev) => [...prev, newDeck]);
-      Toast.show({ type: "success", text1: "Tạo deck thành công!" });
+      Toast.show({ type: "success", text1: "Created Deck Successfully!" });
       setDeckName("");
       setModalVisible(false);
     } catch (err) {
-      Toast.show({ type: "error", text1: "Lỗi tạo deck" });
+      Toast.show({ type: "error", text1: "Created Deck Unsuccessfully" });
     }
   };
 
@@ -97,7 +97,6 @@ const DeckScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Add Deck Button */}
       <TouchableOpacity
         className="absolute bottom-8 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
         onPress={() => setModalVisible(true)}
@@ -105,7 +104,6 @@ const DeckScreen = () => {
         <Entypo name="plus" size={28} color="white" />
       </TouchableOpacity>
 
-      {/* Modal to create deck */}
       <Modal
         visible={modalVisible}
         animationType="slide"

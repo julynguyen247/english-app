@@ -50,7 +50,7 @@ const RootLayout = () => {
         />
 
         <Stack.Screen
-          name="(user)/deck"
+          name="(user)/YourDeck"
           options={{
             animation: "slide_from_right",
             gestureEnabled: true,
@@ -64,42 +64,7 @@ const RootLayout = () => {
             gestureEnabled: true,
           }}
         />
-        <Stack.Screen
-          name="(setting)/setting"
-          options={{
-            animation: "slide_from_right",
-            gestureEnabled: true,
-          }}
-        />
-        <Stack.Screen
-          name="(setting)/account"
-          options={{
-            animation: "slide_from_right",
-            gestureEnabled: true,
-          }}
-        />
-        <Stack.Screen
-          name="(setting)/changePassword"
-          options={{
-            animation: "slide_from_right",
-            gestureEnabled: true,
-          }}
-        />
 
-        <Stack.Screen
-          name="(setting)/changeProfile"
-          options={{
-            animation: "slide_from_right",
-            gestureEnabled: true,
-          }}
-        />
-        <Stack.Screen
-          name="(setting)/changeUsername"
-          options={{
-            animation: "slide_from_right",
-            gestureEnabled: true,
-          }}
-        />
         <Stack.Screen
           name="(user)/lessons"
           options={{
@@ -123,6 +88,13 @@ const RootLayout = () => {
         />
         <Stack.Screen
           name="(user)/cards"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/SavedDeck"
           options={{
             animation: "slide_from_right",
             gestureEnabled: true,

@@ -49,4 +49,19 @@ declare global {
     question: string;
     explanation: string;
   }
+  export interface IFlashcard {
+    flashcardId: number;
+    frontText: string;
+    backText: string;
+  }
+  export interface IDeck {
+    id: number;
+    name: string;
+    flashCardNumber: number;
+    status: string;
+    ownerId: number;
+    flashCards?: any;
+    favoriteDecks?: any;
+    owner?: any;
+  }
 }

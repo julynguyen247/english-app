@@ -40,7 +40,7 @@ const NewPass = () => {
     if (!resetCode || !newPassword) {
       Toast.show({
         type: "error",
-        text1: "Vui lòng nhập đầy đủ OTP và mật khẩu mới.",
+        text1: "Please enter both OTP and new password.",
       });
       return;
     }
@@ -52,8 +52,8 @@ const NewPass = () => {
       const res = await resetPasswordAPI(email, resetCode, newPassword);
       Toast.show({
         type: "success",
-        text1: "Thành công",
-        text2: res.data?.message || "Đặt lại mật khẩu thành công",
+        text1: "Success",
+        text2: res.data?.message || "Password has been reset successfully.",
       });
 
       setTimeout(() => {
@@ -62,11 +62,11 @@ const NewPass = () => {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
+        text1: "Error",
         text2:
           error?.response?.data?.message ||
           error?.message ||
-          "Không thể đặt lại mật khẩu.",
+          "Unable to reset password.",
       });
     } finally {
       setIsLoading(false);

@@ -85,3 +85,26 @@ export const addDeckAPI = async (name: string) => {
   });
   return response;
 };
+export const getFlashcardsByDeckIdAPI = async (idDeck: number | string) => {
+  const response = await axios.get<IFlashcard[]>(
+    `/api/getflashcardbyiddeck/${idDeck}`
+  );
+  return response;
+};
+export const addFlashcardAPI = async (
+  deckId: number | string,
+  cards: { frontText: string; backText: string }[]
+) => {
+  const response = await axios.post("/api/addflashcard", cards, {
+    params: { deckId },
+  });
+  return response;
+};
+export const getAllSavedDecksAPI = async () => {
+  const response = await axios.get("/api/allsaveddecks");
+  return response;
+};
+export const getAllDecksAPI = async () => {
+  const response = await axios.get<IDeck[]>("/api/getallpublicdeck");
+  return response;
+};

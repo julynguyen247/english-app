@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,37 +12,57 @@ import { APP_COLOR } from "@/utils/constant";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, router } from "expo-router";
 import Toast from "react-native-toast-message";
+import { getFlashcardsByDeckIdAPI, addFlashcardAPI } from "@/utils/api";
 
 const DeckDetailScreen = () => {
   const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
 
-  const [cards, setCards] = useState([
-    { id: "1", front: "Hello", back: "Xin chào" },
-    { id: "2", front: "Thank you", back: "Cảm ơn" },
-    { id: "3", front: "Goodbye", back: "Tạm biệt" },
-  ]);
+  const [cards, setCards] = useState<
+    { flashcardId: number; frontText: string; backText: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [frontText, setFrontText] = useState("");
   const [backText, setBackText] = useState("");
 
-  const handleAddCard = () => {
+  const fetchCards = async () => {
+    try {
+      const data = await getFlashcardsByDeckIdAPI(id!);
+      setCards(data);
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Không thể tải flashcard" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) fetchCards();
+  }, [id]);
+
+  const handleAddCard = async () => {
     if (!frontText.trim() || !backText.trim()) {
       Toast.show({ type: "error", text1: "Không được để trống!" });
       return;
     }
 
-    const newCard = {
-      id: Date.now().toString(),
-      front: frontText.trim(),
-      back: backText.trim(),
-    };
+    try {
+      await addFlashcardAPI(id!, [
+        { frontText: frontText.trim(), backText: backText.trim() },
+      ]);
+      Toast.show({ type: "success", text1: "Đã thêm thẻ mới!" });
 
-    setCards((prev) => [...prev, newCard]);
-    setFrontText("");
-    setBackText("");
-    setModalVisible(false);
-    Toast.show({ type: "success", text1: "Đã thêm thẻ!" });
+      // Refresh lại danh sách flashcards sau khi thêm
+      fetchCards();
+
+      // Reset input
+      setFrontText("");
+      setBackText("");
+      setModalVisible(false);
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Lỗi khi thêm thẻ" });
+    }
   };
 
   return (
@@ -66,27 +86,34 @@ const DeckDetailScreen = () => {
 
           <View className="items-center mb-6">
             <Ionicons name="layers-outline" size={48} color="#3b82f6" />
-            <Text className="text-black font-bold text-2xl mt-2">{name}</Text>
+            <Text className="text-black font-bold text-2xl mt-2">
+              {name || "Deck"}
+            </Text>
             <Text className="text-gray-500 text-center mt-1">
-              {cards.length} flashcards trong bộ này.
+              {cards.length} flashcards in this deck.
             </Text>
           </View>
 
-          {cards.map((card) => (
-            <View
-              key={card.id}
-              className="mb-4 p-4 rounded-xl bg-blue-100 shadow"
-            >
-              <Text className="font-semibold text-base text-black">
-                Front: {card.front}
-              </Text>
-              <Text className="text-gray-700 mt-1">Back: {card.back}</Text>
-            </View>
-          ))}
+          {loading ? (
+            <Text className="text-center text-gray-500">Loading data...</Text>
+          ) : (
+            cards.map((card) => (
+              <View
+                key={card.flashcardId}
+                className="mb-4 p-4 rounded-xl bg-blue-100 shadow"
+              >
+                <Text className="font-semibold text-base text-black">
+                  Front: {card.frontText}
+                </Text>
+                <Text className="text-gray-700 mt-1">
+                  Back: {card.backText}
+                </Text>
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
 
-      {/* Add card button */}
       <TouchableOpacity
         className="absolute bottom-8 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
         onPress={() => setModalVisible(true)}
@@ -94,7 +121,6 @@ const DeckDetailScreen = () => {
         <Entypo name="plus" size={28} color="white" />
       </TouchableOpacity>
 
-      {/* Modal add card */}
       <Modal
         visible={modalVisible}
         animationType="slide"

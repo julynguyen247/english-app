@@ -37,7 +37,7 @@ const ResetPasswordStep1 = () => {
     if (!email) {
       Toast.show({
         type: "error",
-        text1: "Vui lòng nhập email",
+        text1: "Please enter your email.",
       });
       return;
     }
@@ -47,8 +47,8 @@ const ResetPasswordStep1 = () => {
       const res = await sendResetPasswordCodeAPI(email);
       Toast.show({
         type: "success",
-        text1: "OTP đã được gửi",
-        text2: res?.data?.message || "Vui lòng kiểm tra email của bạn",
+        text1: "OTP Sent",
+        text2: res?.data?.message || "Please check your email.",
       });
 
       setTimeout(() => {
@@ -60,11 +60,11 @@ const ResetPasswordStep1 = () => {
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: "Không thể gửi OTP",
+        text1: "Failed to send OTP",
         text2:
           error?.response?.data?.message ||
           error?.message ||
-          "Đã xảy ra lỗi khi gửi OTP",
+          "An error occurred while sending the OTP.",
       });
     } finally {
       setIsLoading(false);
@@ -107,7 +107,7 @@ const ResetPasswordStep1 = () => {
               textAlign: "center",
             }}
           >
-            Quên mật khẩu
+            Forgot Password
           </Text>
 
           <Text
@@ -119,7 +119,7 @@ const ResetPasswordStep1 = () => {
               paddingHorizontal: 30,
             }}
           >
-            Nhập email của bạn để nhận mã xác nhận.
+            Enter your email to receive a verification code.
           </Text>
 
           <TextInput
@@ -146,7 +146,7 @@ const ResetPasswordStep1 = () => {
             ]}
           >
             <Text style={tw`text-white text-lg font-bold`}>
-              {isLoading ? "Đang gửi..." : "Gửi mã xác nhận"}
+              {isLoading ? "Sending..." : "Send Verification Code"}
             </Text>
           </TouchableOpacity>
 
@@ -161,7 +161,7 @@ const ResetPasswordStep1 = () => {
                 color: APP_COLOR.PRIMARY_BLUE,
               }}
             >
-              Quay lại đăng nhập
+              Back to Login
             </Text>
           </TouchableOpacity>
         </Animated.View>

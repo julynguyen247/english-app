@@ -17,13 +17,13 @@ const ProfileTab = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("access_token");
-      Toast.show({ type: "success", text1: "Đã đăng xuất" });
+      Toast.show({ type: "success", text1: "Logged out successfully" });
       router.replace("/(auth)/signin");
     } catch (error) {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: "Không thể đăng xuất",
+        text1: "Error",
+        text2: "Failed to log out",
       });
     }
   };
@@ -34,7 +34,7 @@ const ProfileTab = () => {
         const res = await getCurrentUserInfoAPI();
         setEmail(res.email);
       } catch (error) {
-        Toast.show({ type: "error", text1: "Lỗi lấy thông tin người dùng" });
+        Toast.show({ type: "error", text1: "Failed to fetch user info" });
       }
     };
     fetchEmail();
@@ -56,7 +56,6 @@ const ProfileTab = () => {
             marginTop: 64,
           }}
         >
-          {/* Avatar */}
           <View style={{ alignItems: "center", marginBottom: 32 }}>
             <View
               style={{
@@ -82,13 +81,12 @@ const ProfileTab = () => {
             </Text>
           </View>
 
-          {/* Options */}
           <View style={{ gap: 12 }}>
             <MotiPressable
               from={{ scale: 1 }}
               animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
               transition={{ type: "timing", duration: 150 }}
-              onPress={() => router.push("/(user)/deck")}
+              onPress={() => router.push("/(user)/YourDeck")}
               style={{
                 backgroundColor: "#fff",
                 padding: 16,
@@ -106,6 +104,37 @@ const ProfileTab = () => {
                 />
                 <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
                   Your Decks
+                </Text>
+              </View>
+              <Feather
+                name="chevron-right"
+                size={20}
+                color={APP_COLOR.TEXT_PRIMARY}
+              />
+            </MotiPressable>
+
+            <MotiPressable
+              from={{ scale: 1 }}
+              animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
+              transition={{ type: "timing", duration: 150 }}
+              onPress={() => router.push("/(user)/SavedDeck")}
+              style={{
+                backgroundColor: "#fff",
+                padding: 16,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Ionicons
+                  name="bookmark-outline"
+                  size={20}
+                  color={APP_COLOR.TEXT_PRIMARY}
+                />
+                <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
+                  Saved Decks
                 </Text>
               </View>
               <Feather
@@ -147,7 +176,6 @@ const ProfileTab = () => {
             </MotiPressable>
           </View>
 
-          {/* Logout */}
           <View style={{ marginTop: 128, marginBottom: 32 }}>
             <MotiPressable
               from={{ scale: 1 }}

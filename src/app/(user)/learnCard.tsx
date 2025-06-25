@@ -1,31 +1,36 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedWrapper from "@/components/animation/animate";
 import { APP_COLOR } from "@/utils/constant";
-
-const vocabularyByCategory: Record<
-  string,
-  { word: string; meaning: string }[]
-> = {
-  "1": [
-    { word: "Check-in", meaning: "Quầy làm thủ tục" },
-    { word: "Customs", meaning: "Hải quan" },
-  ],
-  "2": [
-    { word: "Meeting", meaning: "Cuộc họp" },
-    { word: "Presentation", meaning: "Thuyết trình" },
-  ],
-  // các category khác...
-};
+import { getFlashcardsByDeckIdAPI } from "@/utils/api";
 
 const LearnCardScreen = () => {
-  const { categoryId } = useLocalSearchParams();
-  const cards = vocabularyByCategory[categoryId as string] || [];
+  const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
 
+  const [cards, setCards] = useState<IFlashcard[]>([]);
   const [index, setIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFlashcards = async () => {
+      try {
+        setLoading(true);
+        const res = await getFlashcardsByDeckIdAPI(categoryId || "");
+        setCards(res || []);
+      } catch (err) {
+        console.error("Lỗi khi tải flashcards:", err);
+        setCards([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (categoryId) fetchFlashcards();
+  }, [categoryId]);
+
   const currentCard = cards[index];
 
   const handleNext = () => {
@@ -50,7 +55,9 @@ const LearnCardScreen = () => {
           padding: 24,
         }}
       >
-        {currentCard ? (
+        {loading ? (
+          <ActivityIndicator size="large" color={APP_COLOR.PRIMARY_BLUE} />
+        ) : currentCard ? (
           <View
             style={{
               width: "100%",
@@ -73,12 +80,18 @@ const LearnCardScreen = () => {
                 color: APP_COLOR.TEXT_PRIMARY,
               }}
             >
-              {currentCard.word}
+              {currentCard.frontText}
             </Text>
 
             {showAnswer ? (
-              <Text style={{ fontSize: 18, color: APP_COLOR.TEXT_SECONDARY }}>
-                {currentCard.meaning}
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: APP_COLOR.TEXT_SECONDARY,
+                  textAlign: "center",
+                }}
+              >
+                {currentCard.backText}
               </Text>
             ) : (
               <TouchableOpacity
@@ -113,7 +126,7 @@ const LearnCardScreen = () => {
             )}
           </View>
         ) : (
-          <Text style={{ fontSize: 16 }}>No cards found.</Text>
+          <Text style={{ fontSize: 16 }}>No flashcards found.</Text>
         )}
       </AnimatedWrapper>
     </LinearGradient>
