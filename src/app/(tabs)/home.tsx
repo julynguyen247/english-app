@@ -68,11 +68,12 @@ const HomeTab = () => {
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
         <ScrollView
-          className="flex-1 px-4"
+          style={tw`flex-1 px-4`}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
           scrollEventThrottle={16}
           onScroll={handleScroll}
         >
-          <View className="pt-8">
+          <View style={tw`pt-8`}>
             <LinearGradient
               colors={[APP_COLOR.LIGHT_BLUE, APP_COLOR.PRIMARY_BLUE]}
               style={tw`w-full h-[150px] justify-center items-center rounded-[12px]`}
@@ -90,8 +91,8 @@ const HomeTab = () => {
               </Text>
             </LinearGradient>
 
-            <View className="mb-6 mt-8">
-              <View className="flex-row justify-between items-center mb-3">
+            <View style={tw`mb-6 mt-8`}>
+              <View style={tw`flex-row justify-between items-center mb-3`}>
                 <Text
                   style={{
                     fontSize: 20,
@@ -109,7 +110,7 @@ const HomeTab = () => {
                   color={APP_COLOR.PRIMARY_BLUE}
                 />
               ) : (
-                <View className="flex-row flex-wrap justify-between pt-3">
+                <View style={tw`flex-row flex-wrap justify-between pt-3`}>
                   {skills.map((skill, i) => (
                     <TouchableOpacity
                       key={i}

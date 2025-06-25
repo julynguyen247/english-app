@@ -9,7 +9,6 @@ import tw from "twrnc";
 
 const { height } = Dimensions.get("window");
 
-const Logo = require("@/assets/auth/Logo/Manoke.png");
 const Illustration = require("@/assets/auth/Image/im3.jpg");
 
 const LoginPage = () => {
@@ -22,18 +21,7 @@ const LoginPage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: APP_COLOR.BACKGROUND }}>
       <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 24 }}>
-        <View style={{ alignItems: "center" }}>
-          <MotiView
-            from={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "timing", duration: 1500 }}
-            style={{ alignItems: "center", marginBottom: 16 }}
-          >
-            <Image
-              source={Logo}
-              style={{ width: 180, height: 60, resizeMode: "contain" }}
-            />
-          </MotiView>
+        <View style={{ alignItems: "center", marginTop: 64 }}>
           <Image
             source={Illustration}
             style={{

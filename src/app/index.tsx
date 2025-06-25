@@ -1,43 +1,54 @@
 import React, { useState, useEffect } from "react";
-import { Image } from "react-native";
+import { Image, Text } from "react-native";
 import { APP_COLOR } from "../utils/constant";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppProvider, { useCurrentApp } from "./context/appContext";
-import { getAccountAPI } from "@/utils/api";
+import { getCurrentUserInfoAPI } from "@/utils/api"; // Đã đổi API
 
 const Logo = require("@/assets/auth/Logo/Logo.png");
 
 const WelcomePage = () => {
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [checkingAccount, setCheckingAccount] = useState(true);
   const { setAppState } = useCurrentApp();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShouldRedirect(true);
-    }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
   useEffect(() => {
-    const fetchAccount = async () => {
-      const res = await getAccountAPI();
-      if (res) {
-        setAppState(res);
-        router.replace("/(tabs)/home");
-      } else {
+    const checkLogin = async () => {
+      try {
+        const res = await getCurrentUserInfoAPI();
+        if (res) {
+          setAppState(res);
+          router.replace("/(tabs)/home");
+        } else {
+          setCheckingAccount(false);
+        }
+      } catch (err) {
+        setCheckingAccount(false);
       }
-      fetchAccount();
     };
+
+    checkLogin();
   }, []);
+
+  useEffect(() => {
+    if (!checkingAccount) {
+      const timer = setTimeout(() => {
+        setShouldRedirect(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkingAccount]);
+
   if (shouldRedirect) {
-    return <Redirect href={"/(auth)/start"} />;
+    return <Redirect href="/(auth)/start" />;
   }
 
   return (
     <LinearGradient
-      colors={[APP_COLOR.PURPLE, APP_COLOR.PINK]}
+      colors={[APP_COLOR.NAVY_BLUE, APP_COLOR.BLUE]}
       className="flex-1"
       start={{ x: 0, y: 0.5 }}
       end={{ x: 1, y: 0.5 }}
@@ -48,7 +59,16 @@ const WelcomePage = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "timing", duration: 2500 }}
         >
-          <Image source={Logo} className="w-24 h-24 mb-8" />
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: "bold",
+              color: "white",
+              marginBottom: 32,
+            }}
+          >
+            SMART WAY
+          </Text>
         </MotiView>
       </SafeAreaView>
     </LinearGradient>

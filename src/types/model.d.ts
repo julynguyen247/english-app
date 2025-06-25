@@ -24,7 +24,6 @@ declare global {
   export interface IFetchUser {
     userId: string;
     email: string;
-    adminSecret?: string;
   }
 
   export interface ICategory {

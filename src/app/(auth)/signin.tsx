@@ -17,18 +17,21 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "@/utils/api";
 import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
 const avatar = require("@/assets/auth/Icon/avatar.png");
+const googleLogo = require("@/assets/auth/Icon/google.png");
+const facebookLogo = require("@/assets/auth/Icon/fb.png");
 
 const SignIn = () => {
   const slideAnim = useRef(new Animated.Value(-modalHeight)).current;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const googleLogo = require("@/assets/auth/Icon/google.png");
-  const facebookLogo = require("@/assets/auth/Icon/fb.png");
+
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: 0,
@@ -49,6 +52,7 @@ const SignIn = () => {
       return;
     }
 
+    setIsLoading(true);
     const response = await login(username, password);
     if (response?.success === true) {
       await AsyncStorage.setItem("access_token", response.data);
@@ -61,15 +65,21 @@ const SignIn = () => {
         text2: "Sai tài khoản hoặc mật khẩu",
       });
     }
+    setIsLoading(false);
   };
 
   const handleOAuthLogin = async (provider: "google" | "facebook") => {
-    const redirectUrl = "myapp://redirect";
-    const baseUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+    const redirectUrl = AuthSession.makeRedirectUri({ useProxy: true } as any);
+    const baseUrl =
+      "https://englishapp-api-165787629721.asia-southeast1.run.app";
     const url =
       provider === "google"
-        ? `${baseUrl}/api/Authentication/signin-google?returnUrl=/api/Authentication/profile`
-        : `${baseUrl}/api/Authentication/login-facebook`;
+        ? `${baseUrl}/api/Authentication/signin-google?returnUrl=${encodeURIComponent(
+            redirectUrl
+          )}`
+        : `${baseUrl}/api/Authentication/login-facebook?returnUrl=${encodeURIComponent(
+            redirectUrl
+          )}`;
 
     const result = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
 
@@ -197,15 +207,17 @@ const SignIn = () => {
                 alignItems: "center",
               }}
               onPress={handleSignIn}
+              disabled={isLoading}
             >
               <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                Sign In
+                {isLoading
+                  ? "\u0110ang \u0111\u0103ng nh\u1eadp..."
+                  : "Sign In"}
               </Text>
             </TouchableOpacity>
 
             <View style={tw`w-full items-center mt-6`}>
               <Text style={{ fontSize: 14, color: "#888" }}>Or</Text>
-
               <TouchableOpacity
                 onPress={() => handleOAuthLogin("google")}
                 style={{

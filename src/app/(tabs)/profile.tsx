@@ -6,18 +6,35 @@ import { APP_COLOR } from "@/utils/constant";
 import { router } from "expo-router";
 import { MotiPressable } from "moti/interactions";
 import AnimatedWrapper from "@/components/animation/animate";
-import { getAccountAPI } from "@/utils/api";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import { getCurrentUserInfoAPI } from "@/utils/api";
 
 const ProfileTab = () => {
   const [email, setEmail] = useState<string | null>(null);
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("access_token");
+      Toast.show({ type: "success", text1: "Đã đăng xuất" });
+      router.replace("/(auth)/signin");
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: "Không thể đăng xuất",
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchEmail = async () => {
       try {
-        const res = await getAccountAPI();
+        const res = await getCurrentUserInfoAPI();
         setEmail(res.email);
       } catch (error) {
-        console.log("Lỗi load profile:", error);
+        Toast.show({ type: "error", text1: "Lỗi lấy thông tin người dùng" });
       }
     };
     fetchEmail();
@@ -31,7 +48,14 @@ const ProfileTab = () => {
       style={{ flex: 1 }}
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 48 }}>
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            paddingTop: 48,
+            marginTop: 64,
+          }}
+        >
           {/* Avatar */}
           <View style={{ alignItems: "center", marginBottom: 32 }}>
             <View
@@ -64,7 +88,7 @@ const ProfileTab = () => {
               from={{ scale: 1 }}
               animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
               transition={{ type: "timing", duration: 150 }}
-              onPress={() => router.push("/record")}
+              onPress={() => router.push("/(user)/deck")}
               style={{
                 backgroundColor: "#fff",
                 padding: 16,
@@ -76,12 +100,12 @@ const ProfileTab = () => {
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Ionicons
-                  name="mic-outline"
+                  name="albums-outline"
                   size={20}
                   color={APP_COLOR.TEXT_PRIMARY}
                 />
                 <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
-                  Your Recordings
+                  Your Decks
                 </Text>
               </View>
               <Feather
@@ -95,7 +119,7 @@ const ProfileTab = () => {
               from={{ scale: 1 }}
               animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
               transition={{ type: "timing", duration: 150 }}
-              onPress={() => router.push("/playlist")}
+              onPress={() => router.push("/(user)/study")}
               style={{
                 backgroundColor: "#fff",
                 padding: 16,
@@ -107,12 +131,12 @@ const ProfileTab = () => {
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Ionicons
-                  name="musical-notes-outline"
+                  name="book-outline"
                   size={20}
                   color={APP_COLOR.TEXT_PRIMARY}
                 />
                 <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
-                  Your Playlists
+                  Start Studying
                 </Text>
               </View>
               <Feather
@@ -123,13 +147,13 @@ const ProfileTab = () => {
             </MotiPressable>
           </View>
 
-          {/* Log out */}
-          <View style={{ marginTop: "auto", marginBottom: 32 }}>
+          {/* Logout */}
+          <View style={{ marginTop: 128, marginBottom: 32 }}>
             <MotiPressable
               from={{ scale: 1 }}
               animate={({ pressed }) => ({ scale: pressed ? 0.95 : 1 })}
               transition={{ type: "timing", duration: 150 }}
-              onPress={() => console.log("Log out")}
+              onPress={handleLogout}
               style={{
                 backgroundColor: "#fff",
                 paddingVertical: 14,

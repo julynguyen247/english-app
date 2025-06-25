@@ -1,11 +1,30 @@
 import React from "react";
-import { View, Text, TextInput, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
+import { router } from "expo-router";
 
-const SearchTab = () => {
+const topics = [
+  { id: 1, title: "Travel", color: "#FFDEE9" },
+  { id: 2, title: "Business", color: "#B5FFFC" },
+  { id: 3, title: "Technology", color: "#D5FFB0" },
+  { id: 4, title: "Health", color: "#FFC6A5" },
+  { id: 5, title: "Education", color: "#C4C1FF" },
+  { id: 6, title: "Food", color: "#FEEBCB" },
+  { id: 7, title: "Music", color: "#CFFAFE" },
+  { id: 8, title: "Science", color: "#E0BBE4" },
+  { id: 9, title: "Daily Life", color: "#FFFFB5" },
+];
+
+const CardTab = () => {
   return (
     <LinearGradient
       colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
@@ -14,7 +33,10 @@ const SearchTab = () => {
       style={{ flex: 1 }}
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+        <ScrollView
+          style={{ flex: 1, paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingBottom: 40 }}
+        >
           <View style={{ paddingTop: 32 }}>
             {/* Search Bar */}
             <View
@@ -35,13 +57,17 @@ const SearchTab = () => {
                 style={{ marginRight: 8 }}
               />
               <TextInput
-                placeholder="Search songs, artists, playlists..."
+                placeholder="Search cards"
                 placeholderTextColor="#999"
-                style={{ flex: 1, fontSize: 16, color: APP_COLOR.TEXT_PRIMARY }}
+                style={{
+                  flex: 1,
+                  fontSize: 16,
+                  color: APP_COLOR.TEXT_PRIMARY,
+                }}
               />
             </View>
 
-            {/* Suggestions Grid */}
+            {/* Topic Grid */}
             <View
               style={{
                 flexDirection: "row",
@@ -49,14 +75,23 @@ const SearchTab = () => {
                 justifyContent: "space-between",
               }}
             >
-              {[...Array(12)].map((_, i) => (
-                <View
-                  key={i}
+              {topics.map((topic) => (
+                <TouchableOpacity
+                  key={topic.id}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(user)/learnCard",
+                      params: {
+                        categoryId: topic.id.toString(),
+                        level: "Beginner",
+                      },
+                    })
+                  }
                   style={{
                     width: "32%",
                     marginBottom: 16,
                     borderRadius: 12,
-                    backgroundColor: "#E1F0FF",
+                    backgroundColor: topic.color,
                     height: 100,
                     justifyContent: "center",
                     alignItems: "center",
@@ -67,11 +102,15 @@ const SearchTab = () => {
                   }}
                 >
                   <Text
-                    style={{ color: APP_COLOR.TEXT_PRIMARY, fontWeight: "600" }}
+                    style={{
+                      color: APP_COLOR.TEXT_PRIMARY,
+                      fontWeight: "600",
+                      textAlign: "center",
+                    }}
                   >
-                    Item {i + 1}
+                    {topic.title}
                   </Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -81,4 +120,4 @@ const SearchTab = () => {
   );
 };
 
-export default SearchTab;
+export default CardTab;

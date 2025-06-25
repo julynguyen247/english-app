@@ -6,10 +6,25 @@ import React from "react";
 import { Text, TextInput, View, ScrollView } from "react-native";
 
 const HistoryTab = () => {
-  const songs = [
-    { id: "1", name: "Name of Song", artist: "Artist", score: "95" },
-    { id: "2", name: "Another Song", artist: "Singer", score: "87" },
-    { id: "3", name: "Favorite Track", artist: "Someone", score: "100" },
+  const history = [
+    {
+      id: "1",
+      title: "Cambridge IELTS 17 - Reading Test 1",
+      skill: "Reading",
+      score: "36/40",
+    },
+    {
+      id: "2",
+      title: "Cambridge IELTS 16 - Listening Test 2",
+      skill: "Listening",
+      score: "32/40",
+    },
+    {
+      id: "3",
+      title: "Cambridge IELTS 15 - Reading Test 3",
+      skill: "Reading",
+      score: "39/40",
+    },
   ];
 
   return (
@@ -40,7 +55,7 @@ const HistoryTab = () => {
               style={{ marginRight: 8 }}
             />
             <TextInput
-              placeholder="Try typing a song or an artist..."
+              placeholder="Tìm theo đề, kỹ năng..."
               placeholderTextColor="#999"
               style={{ flex: 1, fontSize: 16, color: APP_COLOR.TEXT_PRIMARY }}
             />
@@ -48,7 +63,7 @@ const HistoryTab = () => {
 
           {/* History List */}
           <View>
-            {songs.map((item) => (
+            {history.map((item) => (
               <View
                 key={item.id}
                 style={{
@@ -72,17 +87,23 @@ const HistoryTab = () => {
                     backgroundColor: APP_COLOR.LIGHT_BLUE,
                     borderRadius: 8,
                     marginRight: 12,
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                    {item.skill.slice(0, 1)}
+                  </Text>
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
                       color: APP_COLOR.TEXT_PRIMARY,
                       fontWeight: "bold",
-                      fontSize: 16,
+                      fontSize: 15,
                     }}
                   >
-                    {item.name}
+                    {item.title}
                   </Text>
                   <Text
                     style={{
@@ -91,7 +112,7 @@ const HistoryTab = () => {
                       marginTop: 2,
                     }}
                   >
-                    {item.artist}
+                    {item.skill}
                   </Text>
                 </View>
 

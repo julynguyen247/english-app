@@ -50,7 +50,7 @@ const RootLayout = () => {
         />
 
         <Stack.Screen
-          name="(user)/record"
+          name="(user)/deck"
           options={{
             animation: "slide_from_right",
             gestureEnabled: true,
@@ -58,7 +58,7 @@ const RootLayout = () => {
         />
 
         <Stack.Screen
-          name="(user)/playlist"
+          name="(user)/study"
           options={{
             animation: "slide_from_right",
             gestureEnabled: true,
@@ -109,6 +109,20 @@ const RootLayout = () => {
         />
         <Stack.Screen
           name="(user)/exercises"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/learnCard"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/cards"
           options={{
             animation: "slide_from_right",
             gestureEnabled: true,

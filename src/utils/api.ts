@@ -59,3 +59,29 @@ export const getLessonsByCategoryAPI = (categoryId: number, level: string) => {
 export const getExercisesByLessonIdAPI = (lessonId: number) => {
   return axios.get(`/api/exercises/${lessonId}`);
 };
+export const getAllExerciseAndOptionAPI = (lessonId: number) => {
+  return axios.get("/api/exercise-options/getallexerciseandoption", {
+    params: { lessonId },
+  });
+};
+export const loginWithGoogleAPI = (
+  returnUrl = "/api/Authentication/profile"
+) => {
+  const url = `/api/Authentication/signin-google?returnUrl=${encodeURIComponent(
+    returnUrl
+  )}`;
+  return axios.get(url);
+};
+export const loginWithFacebookAPI = () => {
+  return axios.get(`/api/Authentication/login-facebook`);
+};
+export const getCurrentUserInfoAPI = () => {
+  return axios.get("/getcurrentuserinfo");
+};
+export const addDeckAPI = async (name: string) => {
+  const response = await axios.post("/api/adddeck", {
+    name,
+    flashCardNumber: 0,
+  });
+  return response;
+};
