@@ -53,10 +53,8 @@ const DeckDetailScreen = () => {
       ]);
       Toast.show({ type: "success", text1: "Đã thêm thẻ mới!" });
 
-      // Refresh lại danh sách flashcards sau khi thêm
       fetchCards();
 
-      // Reset input
       setFrontText("");
       setBackText("");
       setModalVisible(false);

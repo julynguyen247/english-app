@@ -22,7 +22,7 @@ declare global {
     accessToken: string;
   }
   export interface IFetchUser {
-    userId: string;
+    userId: number;
     email: string;
   }
 

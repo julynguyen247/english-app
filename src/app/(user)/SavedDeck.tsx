@@ -12,27 +12,46 @@ import { APP_COLOR } from "@/utils/constant";
 import { getAllSavedDecksAPI } from "@/utils/api";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
+import { useCurrentApp } from "../context/appContext";
+
+interface ISavedDeck {
+  id: number;
+  name: string;
+  flashCardNumber: number;
+}
 
 const SavedDecksScreen = () => {
-  const [decks, setDecks] = useState<
-    { id: number; name: string; flashCardNumber: number }[]
-  >([]);
+  const [decks, setDecks] = useState<ISavedDeck[]>([]);
   const [loading, setLoading] = useState(true);
+  const { appState } = useCurrentApp();
 
   useEffect(() => {
-    const fetchSaved = async () => {
+    const fetchSavedDecks = async () => {
+      if (!appState?.userId) {
+        Toast.show({
+          type: "error",
+          text1: "User not found",
+          text2: "Please log in again.",
+        });
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getAllSavedDecksAPI();
+        const data = await getAllSavedDecksAPI(Number(appState?.userId));
         setDecks(data);
       } catch (err) {
-        Toast.show({ type: "error", text1: "Không thể tải Saved Decks" });
+        Toast.show({
+          type: "error",
+          text1: "Failed to load saved decks",
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSaved();
-  }, []);
+    fetchSavedDecks();
+  }, [appState]);
 
   return (
     <LinearGradient
@@ -55,14 +74,16 @@ const SavedDecksScreen = () => {
               Saved Decks
             </Text>
             <Text className="text-gray-500 text-center mt-1">
-              The decks you have saved will be displayed here.
+              All the decks you’ve saved will appear here.
             </Text>
           </View>
 
           {loading ? (
-            <ActivityIndicator color={"#3b82f6"} size="large" />
+            <ActivityIndicator color="#3b82f6" size="large" />
           ) : decks.length === 0 ? (
-            <Text className="text-center text-gray-500">Chưa có deck nào.</Text>
+            <Text className="text-center text-gray-500">
+              You haven’t saved any decks yet.
+            </Text>
           ) : (
             decks.map((deck) => (
               <TouchableOpacity
@@ -71,7 +92,10 @@ const SavedDecksScreen = () => {
                 onPress={() =>
                   router.push({
                     pathname: "/(user)/cards",
-                    params: { id: deck.id.toString(), name: deck.name },
+                    params: {
+                      id: deck.id.toString(),
+                      name: deck.name,
+                    },
                   })
                 }
               >

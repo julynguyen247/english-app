@@ -6,7 +6,7 @@ import { MotiView } from "moti";
 import { Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppProvider, { useCurrentApp } from "./context/appContext";
-import { getCurrentUserInfoAPI } from "@/utils/api"; // Đã đổi API
+import { getCurrentUserInfoAPI } from "@/utils/api";
 
 const Logo = require("@/assets/auth/Logo/Logo.png");
 
@@ -19,6 +19,7 @@ const WelcomePage = () => {
     const checkLogin = async () => {
       try {
         const res = await getCurrentUserInfoAPI();
+        console.log(res);
         if (res) {
           setAppState(res);
           router.replace("/(tabs)/home");

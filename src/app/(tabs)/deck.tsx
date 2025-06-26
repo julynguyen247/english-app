@@ -6,30 +6,38 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
-import { getAllDecksAPI } from "@/utils/api";
+import { getAllDecksAPI, saveDeckAPI } from "@/utils/api";
 import { router } from "expo-router";
 import DeckMoreMenu from "@/components/deck/DeckMoreMenu";
+import Toast from "react-native-toast-message";
+import { useCurrentApp } from "../context/appContext";
 
 const CardTab = () => {
   const [decks, setDecks] = useState<IDeck[]>([]);
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDeckId, setSelectedDeckId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { appState } = useCurrentApp();
+  const userId = appState?.userId;
+
+  const fetchDecks = async () => {
+    try {
+      const res = await getAllDecksAPI();
+      setDecks(res);
+    } catch (err) {
+      console.error("Lỗi khi tải bộ thẻ:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchDecks = async () => {
-      try {
-        const res = await getAllDecksAPI();
-        setDecks(res);
-      } catch (err) {
-        console.error("Lỗi khi tải bộ thẻ:", err);
-      }
-    };
     fetchDecks();
   }, []);
 
@@ -37,12 +45,33 @@ const CardTab = () => {
     deck.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSaveDeck = () => {
-    if (selectedDeckId !== null) {
-      console.log("Saving deck with id:", selectedDeckId);
-      // TODO: Gọi API để lưu bộ thẻ ở đây
+  const handleSaveDeck = async () => {
+    const selectedDeck = decks.find((d) => d.id === selectedDeckId);
+    if (!selectedDeck) {
+      Toast.show({ type: "error", text1: "No deck selected!" });
+      return;
     }
-    setModalVisible(false);
+
+    if (selectedDeck.ownerId === userId) {
+      setModalVisible(false);
+      Toast.show({
+        type: "error",
+        text1: "This is your deck. You can't save it!",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await saveDeckAPI(selectedDeck.id);
+      Toast.show({ type: "success", text1: "Deck saved!" });
+      await fetchDecks();
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Save failed!" });
+    } finally {
+      setLoading(false);
+      setModalVisible(false);
+    }
   };
 
   return (
@@ -58,7 +87,6 @@ const CardTab = () => {
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           <View style={{ paddingTop: 32 }}>
-            {/* Search */}
             <View
               style={{
                 flexDirection: "row",
@@ -79,17 +107,12 @@ const CardTab = () => {
               <TextInput
                 placeholder="Search decks"
                 placeholderTextColor="#999"
-                style={{
-                  flex: 1,
-                  fontSize: 16,
-                  color: APP_COLOR.TEXT_PRIMARY,
-                }}
+                style={{ flex: 1, fontSize: 16, color: APP_COLOR.TEXT_PRIMARY }}
                 value={search}
                 onChangeText={setSearch}
               />
             </View>
 
-            {/* Decks */}
             <View
               style={{
                 flexDirection: "row",
@@ -156,31 +179,33 @@ const CardTab = () => {
           </View>
         </ScrollView>
 
-        <View style={{ height: "auto" }}>
-          <Modal
-            visible={modalVisible}
-            animationType="slide"
-            transparent
-            onRequestClose={() => setModalVisible(false)}
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.4)",
+              justifyContent: "flex-end",
+            }}
+            onPress={() => setModalVisible(false)}
+            activeOpacity={1}
           >
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                backgroundColor: "rgba(0,0,0,0.4)",
-                justifyContent: "flex-end",
-              }}
-              onPress={() => setModalVisible(false)}
-              activeOpacity={1}
-            >
-              <View style={{ width: "100%" }}>
+            <View style={{ width: "100%" }}>
+              {loading ? (
+                <ActivityIndicator size="large" color={APP_COLOR.BLUE} />
+              ) : (
                 <DeckMoreMenu
                   onSave={handleSaveDeck}
                   onClose={() => setModalVisible(false)}
                 />
-              </View>
-            </TouchableOpacity>
-          </Modal>
-        </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </AnimatedWrapper>
     </LinearGradient>
   );

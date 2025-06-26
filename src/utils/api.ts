@@ -76,13 +76,19 @@ export const loginWithFacebookAPI = () => {
   return axios.get(`/api/Authentication/login-facebook`);
 };
 export const getCurrentUserInfoAPI = () => {
-  return axios.get("/getcurrentuserinfo");
+  return axios.get<IFetchUser>("/getcurrentuserinfo");
 };
-export const addDeckAPI = async (name: string) => {
-  const response = await axios.post("/api/adddeck", {
-    name,
-    flashCardNumber: 0,
-  });
+export const addDeckAPI = async (name: string, ownerId: number) => {
+  const response = await axios.post(
+    "/api/adddeck",
+    {
+      name,
+      status: "private",
+    },
+    {
+      params: { ownerId },
+    }
+  );
   return response;
 };
 export const getFlashcardsByDeckIdAPI = async (idDeck: number | string) => {
@@ -100,11 +106,34 @@ export const addFlashcardAPI = async (
   });
   return response;
 };
-export const getAllSavedDecksAPI = async () => {
-  const response = await axios.get("/api/allsaveddecks");
+export const getAllSavedDecksAPI = async (userId: number) => {
+  const response = await axios.get("/api/allsaveddecks", {
+    params: { userId },
+  });
   return response;
 };
 export const getAllDecksAPI = async () => {
   const response = await axios.get<IDeck[]>("/api/getallpublicdeck");
+  return response;
+};
+export const saveDeckAPI = async (deckID: number) => {
+  const response = await axios.post(`/api/savedeck?deckID=${deckID}`);
+  return response;
+};
+export const getOwnDecksAPI = async (ownerId: number) => {
+  const response = await axios.get("/api/getowndecks", {
+    params: { ownerId },
+  });
+  return response;
+};
+export const updateDeckStatusAPI = async (
+  deckId: number,
+  newStatus: string,
+  currentName: string
+) => {
+  const response = await axios.put(`/api/editdeck/${deckId}`, {
+    name: currentName,
+    status: newStatus,
+  });
   return response;
 };

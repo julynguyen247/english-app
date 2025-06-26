@@ -3,11 +3,24 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 interface DeckMoreMenuProps {
-  onSave: () => void;
+  deckStatus: "public" | "private";
+  onToggleStatus: (newStatus: "public" | "private") => void;
   onClose: () => void;
 }
 
-const DeckMoreMenu: React.FC<DeckMoreMenuProps> = ({ onSave, onClose }) => {
+const YourDeckMoreMenu: React.FC<DeckMoreMenuProps> = ({
+  deckStatus,
+  onToggleStatus,
+  onClose,
+}) => {
+  const nextStatus = deckStatus === "public" ? "private" : "public";
+  const iconName =
+    nextStatus === "public" ? "earth-outline" : "lock-closed-outline";
+  const label =
+    nextStatus === "public"
+      ? "Make this deck public"
+      : "Make this deck private";
+
   return (
     <View
       style={{
@@ -31,7 +44,7 @@ const DeckMoreMenu: React.FC<DeckMoreMenuProps> = ({ onSave, onClose }) => {
       />
 
       <TouchableOpacity
-        onPress={onSave}
+        onPress={() => onToggleStatus(nextStatus)}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -39,23 +52,17 @@ const DeckMoreMenu: React.FC<DeckMoreMenuProps> = ({ onSave, onClose }) => {
         }}
       >
         <Ionicons
-          name="bookmark-outline"
+          name={iconName}
           size={20}
           color="#333"
           style={{ marginRight: 12 }}
         />
         <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
-          Save this deck
+          {label}
         </Text>
       </TouchableOpacity>
 
-      <View
-        style={{
-          height: 1,
-          backgroundColor: "#eee",
-          marginVertical: 8,
-        }}
-      />
+      <View style={{ height: 1, backgroundColor: "#eee", marginVertical: 8 }} />
 
       <TouchableOpacity
         onPress={onClose}
@@ -77,4 +84,4 @@ const DeckMoreMenu: React.FC<DeckMoreMenuProps> = ({ onSave, onClose }) => {
   );
 };
 
-export default DeckMoreMenu;
+export default YourDeckMoreMenu;

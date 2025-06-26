@@ -1,17 +1,76 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { APP_COLOR } from "@/utils/constant";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import Toast from "react-native-toast-message";
+
+import { getOwnDecksAPI, getAllSavedDecksAPI } from "@/utils/api";
+import { useCurrentApp } from "../context/appContext";
+
+interface IDeck {
+  id: number;
+  name: string;
+  flashCardNumber: number;
+}
 
 const StudyScreen = () => {
-  const decks = [
-    { id: "1", name: "English Vocabulary", total: 12 },
-    { id: "2", name: "IELTS Listening", total: 8 },
-    { id: "3", name: "Travel Essentials", total: 10 },
-    { id: "4", name: "Business Terms", total: 6 },
-  ];
+  const { appState } = useCurrentApp();
+  const [decks, setDecks] = useState<IDeck[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDecks = async () => {
+    if (!appState?.userId) return;
+    try {
+      setLoading(true);
+      const [ownRes, savedRes] = await Promise.all([
+        getOwnDecksAPI(appState.userId),
+        getAllSavedDecksAPI(appState.userId),
+      ]);
+
+      const ownDecks: IDeck[] = ownRes || [];
+      const savedDecks: IDeck[] = savedRes || [];
+
+      const mergedDecks = [...ownDecks, ...savedDecks];
+      setDecks(mergedDecks);
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Failed to load decks" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDecks();
+  }, [appState?.userId]);
+
+  const renderDeckItem = (deck: IDeck) => (
+    <TouchableOpacity
+      key={deck.id}
+      className="flex-row items-center mb-5"
+      onPress={() =>
+        router.push({
+          pathname: "/learnCard",
+          params: { categoryId: deck.id.toString() },
+        })
+      }
+    >
+      <View className="w-20 h-20 bg-blue-200 rounded-lg mr-4" />
+      <View className="justify-center">
+        <Text className="text-black font-bold">{deck.name}</Text>
+        <Text className="text-gray-500">
+          Flashcards: {deck.flashCardNumber}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <LinearGradient
@@ -26,9 +85,8 @@ const StudyScreen = () => {
           paddingTop: 48,
           paddingBottom: 32,
         }}
-        className="h-full"
       >
-        <View className="bg-white rounded-2xl px-6 py-6 shadow-md h-[75vh]">
+        <View className="bg-white rounded-2xl px-6 py-6 shadow-md min-h-[75vh]">
           <TouchableOpacity onPress={() => router.back()} className="self-end">
             <Text className="text-blue-400 font-bold text-base mr-1">Done</Text>
           </TouchableOpacity>
@@ -43,19 +101,13 @@ const StudyScreen = () => {
             </Text>
           </View>
 
-          {decks.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              className="flex-row items-center mb-5"
-              onPress={() => router.push("/learnCard")}
-            >
-              <View className="w-20 h-20 bg-blue-200 rounded-lg mr-4" />
-              <View className="justify-center">
-                <Text className="text-black font-bold">{item.name}</Text>
-                <Text className="text-gray-500">Flashcards: {item.total}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+          {loading ? (
+            <ActivityIndicator size="large" color="#3b82f6" />
+          ) : decks.length === 0 ? (
+            <Text className="text-center text-gray-500">No decks found.</Text>
+          ) : (
+            decks.map(renderDeckItem)
+          )}
         </View>
       </ScrollView>
     </LinearGradient>

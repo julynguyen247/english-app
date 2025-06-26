@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedWrapper from "@/components/animation/animate";
 import { APP_COLOR } from "@/utils/constant";
@@ -13,6 +13,7 @@ const LearnCardScreen = () => {
   const [index, setIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
     const fetchFlashcards = async () => {
@@ -37,6 +38,8 @@ const LearnCardScreen = () => {
     if (index < cards.length - 1) {
       setIndex(index + 1);
       setShowAnswer(false);
+    } else {
+      setIsFinished(true);
     }
   };
 
@@ -57,6 +60,55 @@ const LearnCardScreen = () => {
       >
         {loading ? (
           <ActivityIndicator size="large" color={APP_COLOR.PRIMARY_BLUE} />
+        ) : isFinished ? (
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: 32,
+              borderRadius: 16,
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 6,
+              elevation: 5,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: "bold",
+                color: APP_COLOR.TEXT_PRIMARY,
+                marginBottom: 8,
+                textAlign: "center",
+              }}
+            >
+              Congratulations!
+            </Text>
+            <Text
+              style={{
+                fontSize: 18,
+                color: APP_COLOR.TEXT_SECONDARY,
+                textAlign: "center",
+                marginBottom: 24,
+              }}
+            >
+              You have completed all the flashcards in this deck.
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: APP_COLOR.PRIMARY_BLUE,
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 8,
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                Back to Study
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : currentCard ? (
           <View
             style={{
@@ -84,15 +136,31 @@ const LearnCardScreen = () => {
             </Text>
 
             {showAnswer ? (
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: APP_COLOR.TEXT_SECONDARY,
-                  textAlign: "center",
-                }}
-              >
-                {currentCard.backText}
-              </Text>
+              <>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: APP_COLOR.TEXT_SECONDARY,
+                    textAlign: "center",
+                  }}
+                >
+                  {currentCard.backText}
+                </Text>
+                <TouchableOpacity
+                  onPress={handleNext}
+                  style={{
+                    marginTop: 20,
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 8,
+                    backgroundColor: "#ccc",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold" }}>
+                    {index < cards.length - 1 ? "Next" : "Finish"}
+                  </Text>
+                </TouchableOpacity>
+              </>
             ) : (
               <TouchableOpacity
                 onPress={() => setShowAnswer(true)}
@@ -107,21 +175,6 @@ const LearnCardScreen = () => {
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>
                   Show Answer
                 </Text>
-              </TouchableOpacity>
-            )}
-
-            {index < cards.length - 1 && showAnswer && (
-              <TouchableOpacity
-                onPress={handleNext}
-                style={{
-                  marginTop: 20,
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 8,
-                  backgroundColor: "#ccc",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Next</Text>
               </TouchableOpacity>
             )}
           </View>
