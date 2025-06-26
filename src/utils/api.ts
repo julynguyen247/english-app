@@ -137,3 +137,23 @@ export const updateDeckStatusAPI = async (
   });
   return response;
 };
+export const getAllExamsAPI = async () => {
+  const response = await axios.get<IExam[]>("/api/allexams");
+  return response;
+};
+export const getSectionsByExamIdAPI = async (examId: number) => {
+  const response = await axios.get<ISection[]>(
+    `/api/exams/GetSectionsByExamId/${examId}`
+  );
+  return response;
+};
+export const getQuestionsBySectionIdAPI = async (sectionId: number) => {
+  const response = await axios.get(
+    `/api/sections/GetQuestionsBySectionId/${sectionId}`
+  );
+  return response;
+};
+export const addUserExamResultAPI = async (results: IUserExamResult[]) => {
+  const res = await axios.post("/api/adduserexamresult", results);
+  return res;
+};

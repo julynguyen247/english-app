@@ -1,49 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TextInput,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
 import { Ionicons } from "@expo/vector-icons";
+import { getAllExamsAPI } from "@/utils/api";
+import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 const PracticeTab = () => {
-  const tests = [
-    {
-      id: "1",
-      title: "Cambridge IELTS 7",
-      description: "4 full tests with audio & answers",
-    },
-    {
-      id: "2",
-      title: "Cambridge IELTS 8",
-      description: "Academic & General Training tests",
-    },
-    {
-      id: "3",
-      title: "Cambridge IELTS 9",
-      description: "Listening, Reading, Writing samples",
-    },
-    {
-      id: "4",
-      title: "Cambridge IELTS 10",
-      description: "Authentic practice for band 7+",
-    },
-    {
-      id: "5",
-      title: "Cambridge IELTS 11",
-      description: "Academic English exam prep",
-    },
-    {
-      id: "6",
-      title: "Cambridge IELTS 12",
-      description: "Official tests with answer keys",
-    },
-  ];
+  const [exams, setExams] = useState<IExam[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const res = await getAllExamsAPI();
+        setExams(res || []);
+      } catch (err) {
+        Toast.show({ type: "error", text1: "Failed to load exams" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
+  }, []);
+
+  const filteredExams = exams.filter((exam) =>
+    exam.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <LinearGradient
@@ -77,14 +71,20 @@ const PracticeTab = () => {
             <TextInput
               placeholder="Tìm bộ đề Cambridge..."
               placeholderTextColor="#999"
+              value={search}
+              onChangeText={setSearch}
               style={{ flex: 1, fontSize: 16, color: APP_COLOR.TEXT_PRIMARY }}
             />
           </View>
 
-          <View>
-            {tests.map((test) => (
+          {loading ? (
+            <ActivityIndicator size="large" color={APP_COLOR.PRIMARY_BLUE} />
+          ) : filteredExams.length === 0 ? (
+            <Text className="text-center text-gray-500">No exams found.</Text>
+          ) : (
+            filteredExams.map((exam) => (
               <View
-                key={test.id}
+                key={exam.examId}
                 style={{
                   backgroundColor: "#FFFFFF",
                   padding: 16,
@@ -105,7 +105,7 @@ const PracticeTab = () => {
                     marginBottom: 6,
                   }}
                 >
-                  {test.title}
+                  {exam.title}
                 </Text>
                 <Text
                   style={{
@@ -114,55 +114,30 @@ const PracticeTab = () => {
                     marginBottom: 12,
                   }}
                 >
-                  {test.description}
+                  {exam.description}
                 </Text>
 
-                <View
+                <TouchableOpacity
                   style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
+                    backgroundColor: APP_COLOR.PRIMARY_BLUE,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    router.push({
+                      pathname: "/(user)/ExamPage",
+                      params: { examId: exam.examId.toString() },
+                    });
                   }}
                 >
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      backgroundColor: APP_COLOR.PRIMARY_BLUE,
-                      paddingVertical: 10,
-                      borderRadius: 8,
-                      marginRight: 8,
-                      alignItems: "center",
-                    }}
-                    onPress={() => {
-                      console.log(`Go to Reading of ${test.title}`);
-                      // Replace with router.push() if needed
-                    }}
-                  >
-                    <Text style={{ color: "#fff", fontWeight: "600" }}>
-                      Reading
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      backgroundColor: "#FFD700",
-                      paddingVertical: 10,
-                      borderRadius: 8,
-                      marginLeft: 8,
-                      alignItems: "center",
-                    }}
-                    onPress={() => {
-                      console.log(`Go to Listening of ${test.title}`);
-                    }}
-                  >
-                    <Text style={{ color: "#000", fontWeight: "600" }}>
-                      Listening
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    Take the exam now
+                  </Text>
+                </TouchableOpacity>
               </View>
-            ))}
-          </View>
+            ))
+          )}
         </ScrollView>
       </AnimatedWrapper>
     </LinearGradient>

@@ -64,4 +64,49 @@ declare global {
     favoriteDecks?: any;
     owner?: any;
   }
+  export interface IExam {
+    examId: number;
+    title: string;
+    description: string;
+    level: string;
+    createdAt: string;
+    sections: any;
+  }
+  export interface ISection {
+    sectionId: number;
+    examId: number;
+    name: string;
+    audioUrl: string;
+    transcript: string;
+    sortOrder: number;
+    questions: IQuestion[] | null;
+  }
+  export interface IOption {
+    optionId: number;
+    questionId: number;
+    optionText: string;
+    isCorrect: boolean;
+    sortOrder: number;
+  }
+
+  export interface IQuestion {
+    questionId: number;
+    sectionId: number;
+    questionText: string;
+    type: string;
+    sortOrder: number;
+    correctAnswer: string;
+    options: IOption[];
+  }
+  export interface IUserExamResult {
+    userId: number;
+    examId: number;
+    sectionId: number;
+    questionId: number;
+    answerOptionId: number;
+    answerText: string;
+    answerJson: any;
+    isSubmitted: boolean;
+    answeredAt: string;
+  }
 }
