@@ -207,7 +207,7 @@ const ExamPage = () => {
             color: APP_COLOR.TEXT_PRIMARY,
           }}
         >
-          Bài thi
+          Exam
         </Text>
       </View>
 
@@ -291,7 +291,7 @@ const ExamPage = () => {
           alignItems: "center",
         }}
       >
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>Nộp bài</Text>
+        <Text style={{ color: "#fff", fontWeight: "bold" }}>Submit</Text>
       </TouchableOpacity>
     </LinearGradient>
   );

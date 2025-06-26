@@ -60,9 +60,12 @@ export const getExercisesByLessonIdAPI = (lessonId: number) => {
   return axios.get(`/api/exercises/${lessonId}`);
 };
 export const getAllExerciseAndOptionAPI = (lessonId: number) => {
-  return axios.get("/api/exercise-options/getallexerciseandoption", {
-    params: { lessonId },
-  });
+  return axios.get<IExerciseWithOptions[]>(
+    "/api/exercise-options/getallexerciseandoption",
+    {
+      params: { lessonId },
+    }
+  );
 };
 export const loginWithGoogleAPI = (
   returnUrl = "/api/Authentication/profile"

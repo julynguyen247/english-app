@@ -65,18 +65,20 @@ const LearnCardScreen = () => {
             style={{
               backgroundColor: "white",
               padding: 32,
-              borderRadius: 16,
+              borderRadius: 20,
               alignItems: "center",
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 6,
-              elevation: 5,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 6,
+              width: "100%",
             }}
           >
+            <Text style={{ fontSize: 48 }}>🎉</Text>
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: "bold",
                 color: APP_COLOR.TEXT_PRIMARY,
                 marginBottom: 8,
@@ -99,12 +101,12 @@ const LearnCardScreen = () => {
               onPress={() => router.back()}
               style={{
                 backgroundColor: APP_COLOR.PRIMARY_BLUE,
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 8,
+                paddingVertical: 12,
+                paddingHorizontal: 28,
+                borderRadius: 12,
               }}
             >
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
                 Back to Study
               </Text>
             </TouchableOpacity>
@@ -114,32 +116,46 @@ const LearnCardScreen = () => {
             style={{
               width: "100%",
               backgroundColor: "#fff",
-              borderRadius: 16,
-              padding: 24,
+              borderRadius: 20,
+              padding: 28,
               alignItems: "center",
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
+              shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.1,
-              shadowRadius: 6,
+              shadowRadius: 8,
               elevation: 5,
             }}
           >
+            {/* Card number */}
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 16,
+                color: APP_COLOR.TEXT_SECONDARY,
+                marginBottom: 6,
+              }}
+            >
+              {index + 1} / {cards.length}
+            </Text>
+
+            {/* Front */}
+            <Text
+              style={{
+                fontSize: 26,
                 fontWeight: "bold",
-                marginBottom: 12,
+                marginBottom: 16,
                 color: APP_COLOR.TEXT_PRIMARY,
+                textAlign: "center",
               }}
             >
               {currentCard.frontText}
             </Text>
 
+            {/* Back */}
             {showAnswer ? (
               <>
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: 20,
                     color: APP_COLOR.TEXT_SECONDARY,
                     textAlign: "center",
                   }}
@@ -149,14 +165,16 @@ const LearnCardScreen = () => {
                 <TouchableOpacity
                   onPress={handleNext}
                   style={{
-                    marginTop: 20,
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    borderRadius: 8,
-                    backgroundColor: "#ccc",
+                    marginTop: 24,
+                    paddingVertical: 12,
+                    paddingHorizontal: 28,
+                    borderRadius: 10,
+                    backgroundColor: APP_COLOR.PRIMARY_BLUE,
                   }}
                 >
-                  <Text style={{ fontWeight: "bold" }}>
+                  <Text
+                    style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
+                  >
                     {index < cards.length - 1 ? "Next" : "Finish"}
                   </Text>
                 </TouchableOpacity>
@@ -166,20 +184,24 @@ const LearnCardScreen = () => {
                 onPress={() => setShowAnswer(true)}
                 style={{
                   backgroundColor: APP_COLOR.PRIMARY_BLUE,
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
-                  borderRadius: 8,
+                  paddingVertical: 12,
+                  paddingHorizontal: 28,
+                  borderRadius: 10,
                   marginTop: 12,
                 }}
               >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                <Text
+                  style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
+                >
                   Show Answer
                 </Text>
               </TouchableOpacity>
             )}
           </View>
         ) : (
-          <Text style={{ fontSize: 16 }}>No flashcards found.</Text>
+          <Text style={{ fontSize: 16, color: APP_COLOR.TEXT_SECONDARY }}>
+            No flashcards found.
+          </Text>
         )}
       </AnimatedWrapper>
     </LinearGradient>

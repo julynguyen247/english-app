@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { getAllExerciseAndOptionAPI } from "@/utils/api";
 import { APP_COLOR } from "@/utils/constant";
+import { Ionicons } from "@expo/vector-icons";
 
 const ExerciseScreen = () => {
   const { lessonId } = useLocalSearchParams<{ lessonId: string }>();
@@ -16,13 +17,14 @@ const ExerciseScreen = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<{
     [key: number]: number;
   }>({});
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getAllExerciseAndOptionAPI(Number(lessonId));
-        setExerciseList(res);
+        setExerciseList(res || []);
       } catch (err) {
         console.error("Error fetching exercises:", err);
         setExerciseList([]);
@@ -35,24 +37,44 @@ const ExerciseScreen = () => {
   }, [lessonId]);
 
   const handleSelect = (exerciseId: number, optionId: number) => {
+    if (submitted) return;
     setSelectedAnswers((prev) => ({
       ...prev,
       [exerciseId]: optionId,
     }));
   };
 
+  const handleSubmit = () => {
+    setSubmitted(true);
+  };
+
   return (
     <ScrollView style={{ padding: 16, backgroundColor: APP_COLOR.BACKGROUND }}>
-      <Text
+      <View
         style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          color: APP_COLOR.TEXT_PRIMARY,
-          marginBottom: 12,
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 16,
         }}
       >
-        Exercises
-      </Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={APP_COLOR.TEXT_PRIMARY}
+            style={{ marginRight: 8 }}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: APP_COLOR.TEXT_PRIMARY,
+          }}
+        >
+          Exercises
+        </Text>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color={APP_COLOR.PRIMARY_BLUE} />
@@ -61,66 +83,121 @@ const ExerciseScreen = () => {
           No exercises found.
         </Text>
       ) : (
-        exerciseList.map((item, i) => {
-          const ex = item.exercise;
-          const options = item.exerciseOptionList;
-          const selectedOptionId = selectedAnswers[ex.exerciseId];
+        <>
+          {exerciseList.map((item, i) => {
+            const ex = item.exercise;
+            const options = item.exerciseOptionList;
+            const exId = ex.id ?? ex.exerciseId ?? i;
+            const selectedOptionId = selectedAnswers[exId];
+            const correctOption = options.find((opt: any) => opt.isCorrect);
+            const isCorrect = submitted
+              ? correctOption?.optionId === selectedOptionId
+              : null;
 
-          return (
-            <View
-              key={ex.exerciseId}
-              style={{
-                backgroundColor: APP_COLOR.WHITE,
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 20,
-                shadowColor: "#000",
-                shadowOpacity: 0.05,
-                shadowOffset: { width: 0, height: 1 },
-                shadowRadius: 2,
-                elevation: 2,
-              }}
-            >
-              <Text
+            return (
+              <View
+                key={`exercise-${exId}`}
                 style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  marginBottom: 8,
-                  color: APP_COLOR.TEXT_PRIMARY,
+                  backgroundColor: APP_COLOR.WHITE,
+                  borderRadius: 12,
+                  padding: 16,
+                  marginBottom: 20,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.05,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowRadius: 2,
+                  elevation: 2,
                 }}
               >
-                {i + 1}. {ex.question}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                    color: APP_COLOR.TEXT_PRIMARY,
+                  }}
+                >
+                  {i + 1}. {ex.question}
+                </Text>
 
-              {options.map((opt: any, idx: number) => {
-                const selected = selectedOptionId === opt.optionId;
-                return (
-                  <TouchableOpacity
-                    key={`${ex.exerciseId}-${opt.optionId ?? idx}`}
-                    onPress={() => handleSelect(ex.exerciseId, opt.optionId)}
-                    style={{
-                      padding: 10,
-                      backgroundColor: selected
-                        ? APP_COLOR.PRIMARY_BLUE
-                        : "#f1f1f1",
-                      borderRadius: 8,
-                      marginBottom: 8,
-                    }}
-                  >
-                    <Text
+                {options.map((opt: any, idx: number) => {
+                  const selected = selectedOptionId === opt.optionId;
+                  const isRightAnswer = submitted && opt.isCorrect;
+                  const isWrongSelected =
+                    submitted && selected && !opt.isCorrect;
+
+                  return (
+                    <TouchableOpacity
+                      key={`option-${opt.optionId}`}
+                      onPress={() => handleSelect(exId, opt.optionId)}
+                      disabled={submitted}
                       style={{
-                        color: selected ? "#fff" : APP_COLOR.TEXT_PRIMARY,
-                        fontWeight: selected ? "bold" : "normal",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        padding: 10,
+                        backgroundColor: selected
+                          ? APP_COLOR.PRIMARY_BLUE
+                          : "#f1f1f1",
+                        borderRadius: 8,
+                        marginBottom: 8,
                       }}
                     >
-                      {opt.optionText}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          );
-        })
+                      <Text
+                        style={{
+                          flex: 1,
+                          color: selected ? "#fff" : APP_COLOR.TEXT_PRIMARY,
+                          fontWeight: selected ? "bold" : "normal",
+                        }}
+                      >
+                        {opt.optionText}
+                      </Text>
+
+                      {isRightAnswer && (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={20}
+                          color="green"
+                        />
+                      )}
+                      {isWrongSelected && (
+                        <Ionicons name="close-circle" size={20} color="red" />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+
+                {submitted && (
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      color: isCorrect ? "green" : "red",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {isCorrect ? "Correct!" : "Incorrect."} Explanation:{" "}
+                    {ex.explanation}
+                  </Text>
+                )}
+              </View>
+            );
+          })}
+
+          {!submitted && (
+            <TouchableOpacity
+              onPress={handleSubmit}
+              style={{
+                backgroundColor: APP_COLOR.PRIMARY_BLUE,
+                padding: 16,
+                borderRadius: 10,
+                alignItems: "center",
+                marginTop: 10,
+                marginBottom: 50,
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>Submit</Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
     </ScrollView>
   );

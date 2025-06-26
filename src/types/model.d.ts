@@ -109,4 +109,26 @@ declare global {
     isSubmitted: boolean;
     answeredAt: string;
   }
+  export interface IExercise {
+    lessonId: number;
+    type: "single_choice" | "multiple_choice" | string;
+    question: string;
+    explanation: string;
+    sortOrder: number;
+    createdAt: string;
+    lastUpdatedAt: string;
+  }
+
+  export interface IExerciseOption {
+    optionId: number;
+    exerciseId: number;
+    optionText: string;
+    isCorrect: boolean;
+    sortOrder: number;
+  }
+
+  export interface IExerciseWithOptions {
+    exercise: IExercise;
+    exerciseOptionList: IExerciseOption[];
+  }
 }

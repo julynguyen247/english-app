@@ -41,16 +41,32 @@ const LessonScreen = () => {
 
   return (
     <ScrollView style={{ padding: 16, backgroundColor: APP_COLOR.BACKGROUND }}>
-      <Text
+      {/* Header with back button and title */}
+      <View
         style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          color: APP_COLOR.TEXT_PRIMARY,
-          marginBottom: 12,
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 16,
         }}
       >
-        Lessons - {level}
-      </Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={APP_COLOR.TEXT_PRIMARY}
+            style={{ marginRight: 8 }}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: APP_COLOR.TEXT_PRIMARY,
+          }}
+        >
+          Lessons - {level}
+        </Text>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color={APP_COLOR.PRIMARY_BLUE} />
@@ -62,24 +78,24 @@ const LessonScreen = () => {
         lessons.map((lesson) => (
           <TouchableOpacity
             key={lesson.lessonId}
-            onPress={() => {
+            onPress={() =>
               router.push({
                 pathname: "/(user)/exercises",
                 params: { lessonId: lesson.lessonId },
-              });
-            }}
+              })
+            }
             style={{
               backgroundColor: APP_COLOR.WHITE,
-              borderRadius: 12,
+              borderRadius: 16,
               marginBottom: 16,
               flexDirection: "row",
-              padding: 12,
+              padding: 14,
               alignItems: "center",
               shadowColor: "#000",
-              shadowOpacity: 0.05,
-              shadowOffset: { width: 0, height: 1 },
-              shadowRadius: 2,
-              elevation: 2,
+              shadowOpacity: 0.06,
+              shadowOffset: { width: 0, height: 2 },
+              shadowRadius: 4,
+              elevation: 3,
             }}
           >
             <Image
@@ -87,10 +103,11 @@ const LessonScreen = () => {
               style={{
                 width: 80,
                 height: 80,
-                borderRadius: 8,
+                borderRadius: 12,
                 marginRight: 12,
                 backgroundColor: "#eee",
               }}
+              resizeMode="cover"
             />
             <View style={{ flex: 1 }}>
               <Text
@@ -98,18 +115,23 @@ const LessonScreen = () => {
                   fontWeight: "bold",
                   fontSize: 16,
                   color: APP_COLOR.TEXT_PRIMARY,
+                  marginBottom: 4,
                 }}
               >
                 {lesson.title}
               </Text>
               <Text
                 numberOfLines={2}
-                style={{ fontSize: 13, color: APP_COLOR.TEXT_SECONDARY }}
+                style={{
+                  fontSize: 13,
+                  color: APP_COLOR.TEXT_SECONDARY,
+                  lineHeight: 18,
+                }}
               >
                 {lesson.description}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#888" />
+            <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
         ))
       )}
