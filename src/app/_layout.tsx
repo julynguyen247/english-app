@@ -107,6 +107,34 @@ const RootLayout = () => {
             gestureEnabled: true,
           }}
         />
+        <Stack.Screen
+          name="(user)/result"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/answer"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/WritingDetail"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="(user)/history"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
       </Stack>
       <Toast />
     </AppProvider>

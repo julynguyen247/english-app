@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { getAllExerciseAndOptionAPI } from "@/utils/api";
@@ -48,6 +49,17 @@ const ExerciseScreen = () => {
     setSubmitted(true);
   };
 
+  const handleBack = () => {
+    if (submitted) {
+      router.back();
+    } else {
+      Alert.alert("Do you want to exit?", "Your answers will not be saved.", [
+        { text: "No", style: "cancel" },
+        { text: "Yes", onPress: () => router.back() },
+      ]);
+    }
+  };
+
   return (
     <ScrollView style={{ padding: 16, backgroundColor: APP_COLOR.BACKGROUND }}>
       <View
@@ -57,7 +69,7 @@ const ExerciseScreen = () => {
           marginBottom: 16,
         }}
       >
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={handleBack}>
           <Ionicons
             name="arrow-back"
             size={24}

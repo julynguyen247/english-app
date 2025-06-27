@@ -13,7 +13,8 @@ import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
 import tw from "twrnc";
 import { router, useNavigation } from "expo-router";
-import { getCategoriesAPI } from "@/utils/api";
+import { getCategoriesAPI, getCurrentUserInfoAPI } from "@/utils/api";
+import { useCurrentApp } from "../context/appContext";
 
 const HomeTab = () => {
   const [skills, setSkills] = useState<any[]>([]);
@@ -21,7 +22,7 @@ const HomeTab = () => {
   const currentOffset = useRef(0);
   const [visible, setVisible] = useState(true);
   const navigation = useNavigation();
-
+  const { setAppState } = useCurrentApp();
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     const diff = offsetY - currentOffset.current;
@@ -42,6 +43,16 @@ const HomeTab = () => {
 
     currentOffset.current = offsetY;
   };
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const res = await getCurrentUserInfoAPI();
+      if (res) {
+        setAppState(res);
+      }
+    };
+    checkLogin();
+  }, []);
 
   useEffect(() => {
     const fetchSkills = async () => {

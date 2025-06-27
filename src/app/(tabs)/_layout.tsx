@@ -46,10 +46,10 @@ const TabLayout = () => {
           title: "Practice",
         },
         {
-          name: "history",
-          label: "History",
-          icon: ["history", "history"],
-          title: "History",
+          name: "writing",
+          label: "Writing",
+          icon: ["pencil", "pencil"],
+          title: "Writing",
         },
         {
           name: "profile",

@@ -160,3 +160,70 @@ export const addUserExamResultAPI = async (results: IUserExamResult[]) => {
   const res = await axios.post("/api/adduserexamresult", results);
   return res;
 };
+export const getExamScoreAPI = async (
+  idUser?: number,
+  idExam?: number,
+  sectionId?: number
+): Promise<IExamScore> => {
+  const params: any = {};
+  if (idUser !== undefined) params.idUser = idUser;
+  if (idExam !== undefined) params.idExam = idExam;
+  if (sectionId !== undefined) params.sectionId = sectionId;
+
+  const response = await axios.get("/api/getexamscore", { params });
+  return response;
+};
+export const fetchExamAnswerResultAPI = async (
+  userId: number,
+  examId: number,
+  sectionId: number
+): Promise<IExamAnswerResponse> => {
+  const res = await axios.get("/api/getuserexamresult", {
+    params: { userId, examId, sectionId },
+  });
+  return res;
+};
+export const getAllExamAPI = async (): Promise<IExam[]> => {
+  const res = await axios.get<IExam[]>("/api/getallexam");
+  return res;
+};
+export const getExamQuestionsByIdAPI = async (
+  idExam: number
+): Promise<any[]> => {
+  const res = await axios.get("/api/getexamcontentbyidexam", {
+    params: { idExam },
+  });
+  return res;
+};
+export const getWritingScoreAPI = async (
+  userId: number,
+  examWritingId: number,
+  deBai: string,
+  baiLam: string
+): Promise<any> => {
+  const res = await axios.post("/writingscore/test", {
+    userId,
+    examWritingId,
+    deBai,
+    baiLam,
+  });
+  return res;
+};
+
+export const getUserHistoryAPI = async (
+  userId: number
+): Promise<IUserHistory[]> => {
+  const res = await axios.get<IUserHistory[]>(
+    "/api/getuserelisteningreadinghistory",
+    { params: { userId } }
+  );
+  return res;
+};
+export const getUserHistoryExamAPI = async (
+  userId: number
+): Promise<IUserHistoryExam[]> => {
+  const res = await axios.get<IUserHistoryExam[]>("/api/userhistoryexam", {
+    params: { userId },
+  });
+  return res;
+};

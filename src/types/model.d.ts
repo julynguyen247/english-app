@@ -131,4 +131,55 @@ declare global {
     exercise: IExercise;
     exerciseOptionList: IExerciseOption[];
   }
+  export interface ITypeStat {
+    type: string;
+    total: number;
+    correct: number;
+    incorrect: number;
+  }
+
+  export interface IExamScore {
+    sectionId: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    incorrectAnswers: number;
+    percentCorrect: number;
+    typeStats: ITypeStat[];
+  }
+  export interface IAnswerDetail {
+    userAnswerId: number;
+    userAnswer: string;
+    isCorrect: boolean;
+    correctOptionId: number;
+    correctAnswer: string;
+  }
+
+  export interface IExamAnswerResponse {
+    transcript: string;
+    detailedResults: IAnswerDetail[];
+  }
+  export interface IExam {
+    id: number;
+    title: string;
+    description: string;
+  }
+  export interface IUserHistory {
+    examId: number;
+    examTitle: string;
+    sectionId: number;
+    sectionName: string;
+    latestAnsweredAt: string; // ISO string
+    totalQuestions: number;
+    correctAnswers: number;
+    incorrectAnswers: number;
+    score: number;
+  }
+  export interface IUserHistoryExam {
+    id: number;
+    examId: number;
+    title: string;
+    description: string;
+    userAnswer: string;
+    aiFeedback: string;
+  }
 }

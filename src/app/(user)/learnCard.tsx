@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedWrapper from "@/components/animation/animate";
 import { APP_COLOR } from "@/utils/constant";
 import { getFlashcardsByDeckIdAPI } from "@/utils/api";
+import { Ionicons } from "@expo/vector-icons";
 
 const LearnCardScreen = () => {
   const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
@@ -43,11 +50,51 @@ const LearnCardScreen = () => {
     }
   };
 
+  const handleBack = () => {
+    if (isFinished || index === 0) {
+      router.back();
+    } else {
+      Alert.alert("Exit Learning?", "Your progress will be lost.", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Yes", onPress: () => router.back() },
+      ]);
+    }
+  };
+
   return (
     <LinearGradient
       colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
       style={{ flex: 1 }}
     >
+      {/* Navigation bar */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          paddingTop: 48,
+          paddingBottom: 12,
+        }}
+      >
+        <TouchableOpacity onPress={handleBack}>
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={APP_COLOR.TEXT_PRIMARY}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "bold",
+            color: APP_COLOR.TEXT_PRIMARY,
+            marginLeft: 16,
+          }}
+        >
+          Learn Flashcards
+        </Text>
+      </View>
+
       <AnimatedWrapper
         fade
         slideUp
@@ -126,7 +173,6 @@ const LearnCardScreen = () => {
               elevation: 5,
             }}
           >
-            {/* Card number */}
             <Text
               style={{
                 fontSize: 16,
@@ -137,7 +183,6 @@ const LearnCardScreen = () => {
               {index + 1} / {cards.length}
             </Text>
 
-            {/* Front */}
             <Text
               style={{
                 fontSize: 26,
@@ -150,7 +195,6 @@ const LearnCardScreen = () => {
               {currentCard.frontText}
             </Text>
 
-            {/* Back */}
             {showAnswer ? (
               <>
                 <Text
@@ -173,7 +217,11 @@ const LearnCardScreen = () => {
                   }}
                 >
                   <Text
-                    style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}
+                    style={{
+                      color: "#fff",
+                      fontWeight: "bold",
+                      fontSize: 16,
+                    }}
                   >
                     {index < cards.length - 1 ? "Next" : "Finish"}
                   </Text>

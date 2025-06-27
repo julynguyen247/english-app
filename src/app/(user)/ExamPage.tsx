@@ -28,7 +28,10 @@ const ExamPage = () => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(20 * 60); // 20 minutes countdown
+  const [submitted, setSubmitted] = useState(false);
   const { appState } = useCurrentApp();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,6 +57,21 @@ const ExamPage = () => {
   }, [examId]);
 
   useEffect(() => {
+    if (loading || submitted) return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmit();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [loading, submitted]);
+
+  useEffect(() => {
     return () => {
       if (sound) {
         sound.unloadAsync();
@@ -66,6 +84,7 @@ const ExamPage = () => {
   };
 
   const handleSubmit = async () => {
+    if (submitted) return;
     try {
       const payload: IUserExamResult[] = [];
 
@@ -105,10 +124,17 @@ const ExamPage = () => {
         });
       });
 
-      console.log("Payload:", JSON.stringify(payload, null, 2));
       await addUserExamResultAPI(payload);
       Toast.show({ type: "success", text1: "Submit Successfully!" });
-      router.replace("/(tabs)/home");
+      setSubmitted(true);
+      router.replace({
+        pathname: "/(user)/result",
+        params: {
+          idUser: appState?.userId?.toString(),
+          idExam: examId?.toString(),
+          sectionId: sections[0]?.sectionId?.toString(),
+        },
+      });
     } catch (err) {
       console.error("Error submitting result", err);
       Toast.show({ type: "error", text1: "Submit Failed!" });
@@ -142,10 +168,7 @@ const ExamPage = () => {
 
       newSound.setOnPlaybackStatusUpdate((status) => {
         if (!status.isLoaded) return;
-
-        if (status.didJustFinish) {
-          setPlayingUrl(null);
-        }
+        if (status.didJustFinish) setPlayingUrl(null);
       });
 
       setSound(newSound);
@@ -158,10 +181,7 @@ const ExamPage = () => {
 
   const handleBack = () => {
     Alert.alert("Thoát khỏi bài thi?", "Bạn có chắc chắn muốn thoát?", [
-      {
-        text: "Không",
-        style: "cancel",
-      },
+      { text: "Không", style: "cancel" },
       {
         text: "Có",
         onPress: async () => {
@@ -177,6 +197,14 @@ const ExamPage = () => {
         },
       },
     ]);
+  };
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60)
+      .toString()
+      .padStart(2, "0");
+    const ss = (s % 60).toString().padStart(2, "0");
+    return `${m}:${ss}`;
   };
 
   return (
@@ -208,6 +236,16 @@ const ExamPage = () => {
           }}
         >
           Exam
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "bold",
+            color: APP_COLOR.TEXT_PRIMARY,
+            marginLeft: "auto",
+          }}
+        >
+          ⏱ {formatTime(countdown)}
         </Text>
       </View>
 
@@ -281,6 +319,7 @@ const ExamPage = () => {
           ))
         )}
       </ScrollView>
+
       <TouchableOpacity
         onPress={handleSubmit}
         style={{
@@ -290,6 +329,7 @@ const ExamPage = () => {
           paddingVertical: 14,
           alignItems: "center",
         }}
+        disabled={submitted}
       >
         <Text style={{ color: "#fff", fontWeight: "bold" }}>Submit</Text>
       </TouchableOpacity>

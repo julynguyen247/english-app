@@ -174,6 +174,36 @@ const ProfileTab = () => {
                 color={APP_COLOR.TEXT_PRIMARY}
               />
             </MotiPressable>
+            <MotiPressable
+              from={{ scale: 1 }}
+              animate={({ pressed }) => ({ scale: pressed ? 0.96 : 1 })}
+              transition={{ type: "timing", duration: 150 }}
+              onPress={() => router.push("/(user)/history")}
+              style={{
+                backgroundColor: "#fff",
+                padding: 16,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Ionicons
+                  name="time-outline"
+                  size={20}
+                  color={APP_COLOR.TEXT_PRIMARY}
+                />
+                <Text style={{ marginLeft: 12, color: APP_COLOR.TEXT_PRIMARY }}>
+                  History
+                </Text>
+              </View>
+              <Feather
+                name="chevron-right"
+                size={20}
+                color={APP_COLOR.TEXT_PRIMARY}
+              />
+            </MotiPressable>
           </View>
 
           <View style={{ marginTop: 128, marginBottom: 32 }}>

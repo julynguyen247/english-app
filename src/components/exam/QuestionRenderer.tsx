@@ -79,7 +79,7 @@ const QuestionRenderer: React.FC<Props> = ({ question, answer, onAnswer }) => {
         <TextInput
           value={currentAnswer}
           onChangeText={(text) => onAnswer(question.questionId, text)}
-          placeholder="Nhập câu trả lời..."
+          placeholder="Enter your answer..."
           style={{
             backgroundColor: "#fff",
             borderWidth: 1,
