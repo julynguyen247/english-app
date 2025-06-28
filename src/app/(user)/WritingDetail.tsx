@@ -101,7 +101,21 @@ const WritingDetail = () => {
       setSubmitting(false);
     }
   };
+  const renderMarkdownText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
 
+    return parts.map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return (
+          <Text key={index} style={{ fontWeight: "bold" }}>
+            {part.slice(2, -2)} {/* bỏ dấu ** */}
+          </Text>
+        );
+      } else {
+        return <Text key={index}>{part}</Text>;
+      }
+    });
+  };
   return (
     <LinearGradient
       colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
@@ -187,7 +201,7 @@ const WritingDetail = () => {
                           marginBottom: 6,
                         }}
                       >
-                        {line}
+                        {renderMarkdownText(line)}
                       </Text>
                     ))}
                 </View>
