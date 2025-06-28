@@ -108,7 +108,7 @@ const WritingDetail = () => {
       if (part.startsWith("**") && part.endsWith("**")) {
         return (
           <Text key={index} style={{ fontWeight: "bold" }}>
-            {part.slice(2, -2)} {/* bỏ dấu ** */}
+            {part.slice(2, -2)}
           </Text>
         );
       } else {
@@ -201,7 +201,7 @@ const WritingDetail = () => {
                           marginBottom: 6,
                         }}
                       >
-                        {renderMarkdownText(line)}
+                        {line}
                       </Text>
                     ))}
                 </View>
@@ -259,7 +259,7 @@ const WritingDetail = () => {
                   >
                     {feedback.split("\n").map((line, idx) => (
                       <Text key={idx} style={{ marginBottom: 6, fontSize: 14 }}>
-                        {line}
+                        {renderMarkdownText(line)}
                       </Text>
                     ))}
                   </View>

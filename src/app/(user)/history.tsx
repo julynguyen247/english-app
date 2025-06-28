@@ -62,7 +62,21 @@ const HistoryScreen = () => {
     if (percent >= 15) return 3.0;
     return 2.0;
   };
+  const renderMarkdownText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
 
+    return parts.map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return (
+          <Text key={index} style={{ fontWeight: "bold" }}>
+            {part.slice(2, -2)}
+          </Text>
+        );
+      } else {
+        return <Text key={index}>{part}</Text>;
+      }
+    });
+  };
   return (
     <LinearGradient
       colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
@@ -243,7 +257,7 @@ const HistoryScreen = () => {
                               <Text style={{ fontWeight: "600" }}>
                                 Feedback:
                               </Text>{" "}
-                              {item.aiFeedback}
+                              {renderMarkdownText(item.aiFeedback)}
                             </Text>
                           </>
                         )}
