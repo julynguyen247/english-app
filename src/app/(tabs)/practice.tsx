@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
@@ -13,7 +15,7 @@ import AnimatedWrapper from "@/components/animation/animate";
 import { Ionicons } from "@expo/vector-icons";
 import { getAllExamsAPI } from "@/utils/api";
 import Toast from "react-native-toast-message";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 
 const PracticeTab = () => {
   const [exams, setExams] = useState<IExam[]>([]);
@@ -48,8 +50,13 @@ const PracticeTab = () => {
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
         <ScrollView
-          style={{ flex: 1, paddingHorizontal: 16, paddingTop: 32 }}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            marginTop: 8,
+          }}
+          contentContainerStyle={{ paddingBottom: 32 }}
+          scrollEventThrottle={16}
         >
           <View
             style={{
@@ -69,7 +76,7 @@ const PracticeTab = () => {
               style={{ marginRight: 8 }}
             />
             <TextInput
-              placeholder="Tìm bộ đề Cambridge..."
+              placeholder="Search Cambridge Exams..."
               placeholderTextColor="#999"
               value={search}
               onChangeText={setSearch}

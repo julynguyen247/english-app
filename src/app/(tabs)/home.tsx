@@ -19,30 +19,7 @@ import { useCurrentApp } from "../context/appContext";
 const HomeTab = () => {
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const currentOffset = useRef(0);
-  const [visible, setVisible] = useState(true);
-  const navigation = useNavigation();
   const { setAppState } = useCurrentApp();
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const diff = offsetY - currentOffset.current;
-
-    if (diff > 10 && visible) {
-      setVisible(false);
-      navigation.setOptions?.({ tabBarStyle: { display: "none" } });
-    } else if (diff < -10 && !visible) {
-      setVisible(true);
-      navigation.setOptions?.({
-        tabBarStyle: {
-          backgroundColor: APP_COLOR.WHITE,
-          borderTopWidth: 0,
-          height: 70,
-        },
-      });
-    }
-
-    currentOffset.current = offsetY;
-  };
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -82,7 +59,6 @@ const HomeTab = () => {
           style={tw`flex-1 px-4`}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
           scrollEventThrottle={16}
-          onScroll={handleScroll}
         >
           <View style={tw`pt-8`}>
             <LinearGradient

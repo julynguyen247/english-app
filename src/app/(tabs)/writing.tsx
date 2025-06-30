@@ -48,8 +48,13 @@ const WritingTab = () => {
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
         <ScrollView
-          style={{ flex: 1, paddingHorizontal: 16, paddingTop: 32 }}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            marginTop: 8,
+          }}
+          contentContainerStyle={{ paddingBottom: 56 }}
+          scrollEventThrottle={16}
         >
           <View
             style={{
@@ -69,7 +74,7 @@ const WritingTab = () => {
               style={{ marginRight: 8 }}
             />
             <TextInput
-              placeholder="Tìm đề viết IELTS..."
+              placeholder="Search Writing Exams..."
               placeholderTextColor="#999"
               value={search}
               onChangeText={setSearch}
@@ -86,7 +91,7 @@ const WritingTab = () => {
           ) : (
             filteredExams.map((exam) => (
               <View
-                key={exam.examId}
+                key={exam.id}
                 style={{
                   backgroundColor: "#FFFFFF",
                   padding: 16,

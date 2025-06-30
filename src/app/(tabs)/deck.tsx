@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
 import AnimatedWrapper from "@/components/animation/animate";
 import { getAllDecksAPI, saveDeckAPI } from "@/utils/api";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import DeckMoreMenu from "@/components/deck/DeckMoreMenu";
 import Toast from "react-native-toast-message";
 import { useCurrentApp } from "../context/appContext";
@@ -37,9 +37,11 @@ const CardTab = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDecks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchDecks();
+    }, [])
+  );
 
   const filteredDecks = decks.filter((deck) =>
     deck.name.toLowerCase().includes(search.toLowerCase())
@@ -83,8 +85,13 @@ const CardTab = () => {
     >
       <AnimatedWrapper fade scale slideUp style={{ flex: 1 }}>
         <ScrollView
-          style={{ flex: 1, paddingHorizontal: 16 }}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            marginTop: 8,
+          }}
+          contentContainerStyle={{ paddingBottom: 32 }}
+          scrollEventThrottle={16}
         >
           <View style={{ paddingTop: 32 }}>
             <View

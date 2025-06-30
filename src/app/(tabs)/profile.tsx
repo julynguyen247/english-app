@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Text,
+  View,
+} from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { MotiPressable } from "moti/interactions";
 import AnimatedWrapper from "@/components/animation/animate";
 
@@ -13,7 +18,6 @@ import { getCurrentUserInfoAPI } from "@/utils/api";
 
 const ProfileTab = () => {
   const [email, setEmail] = useState<string | null>(null);
-
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("access_token");
