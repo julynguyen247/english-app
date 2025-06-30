@@ -135,6 +135,13 @@ const RootLayout = () => {
             gestureEnabled: true,
           }}
         />
+        <Stack.Screen
+          name="(user)/SaveDeckCard"
+          options={{
+            animation: "slide_from_right",
+            gestureEnabled: true,
+          }}
+        />
       </Stack>
       <Toast />
     </AppProvider>

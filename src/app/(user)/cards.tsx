@@ -12,7 +12,12 @@ import { APP_COLOR } from "@/utils/constant";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, router } from "expo-router";
 import Toast from "react-native-toast-message";
-import { getFlashcardsByDeckIdAPI, addFlashcardAPI } from "@/utils/api";
+import {
+  getFlashcardsByDeckIdAPI,
+  addFlashcardAPI,
+  deleteFlashcardAPI,
+  updateFlashcardAPI,
+} from "@/utils/api";
 
 const DeckDetailScreen = () => {
   const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
@@ -26,12 +31,16 @@ const DeckDetailScreen = () => {
   const [frontText, setFrontText] = useState("");
   const [backText, setBackText] = useState("");
 
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editFrontText, setEditFrontText] = useState("");
+  const [editBackText, setEditBackText] = useState("");
+
   const fetchCards = async () => {
     try {
       const data = await getFlashcardsByDeckIdAPI(id!);
       setCards(data);
     } catch (err) {
-      Toast.show({ type: "error", text1: "Không thể tải flashcard" });
+      Toast.show({ type: "error", text1: "Cannot load flashcard" });
     } finally {
       setLoading(false);
     }
@@ -43,7 +52,7 @@ const DeckDetailScreen = () => {
 
   const handleAddCard = async () => {
     if (!frontText.trim() || !backText.trim()) {
-      Toast.show({ type: "error", text1: "Không được để trống!" });
+      Toast.show({ type: "error", text1: "This field cannot be empty." });
       return;
     }
 
@@ -51,15 +60,41 @@ const DeckDetailScreen = () => {
       await addFlashcardAPI(id!, [
         { frontText: frontText.trim(), backText: backText.trim() },
       ]);
-      Toast.show({ type: "success", text1: "Đã thêm thẻ mới!" });
+      Toast.show({ type: "success", text1: "Add Flashcard Successfully!" });
 
       fetchCards();
-
       setFrontText("");
       setBackText("");
       setModalVisible(false);
     } catch (err) {
-      Toast.show({ type: "error", text1: "Lỗi khi thêm thẻ" });
+      Toast.show({ type: "error", text1: "Failed" });
+    }
+  };
+
+  const handleDeleteCard = async (flashcardId: number) => {
+    try {
+      const res = await deleteFlashcardAPI(flashcardId);
+      console.log(res);
+      Toast.show({ type: "success", text1: "Delete Successfully" });
+      fetchCards();
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Failed" });
+    }
+  };
+
+  const handleUpdateCard = async () => {
+    if (!editFrontText.trim() || !editBackText.trim()) {
+      Toast.show({ type: "error", text1: "This field cannot be empty!" });
+      return;
+    }
+
+    try {
+      await updateFlashcardAPI(editingId!, editFrontText, editBackText);
+      Toast.show({ type: "success", text1: "Update Successfully!" });
+      fetchCards();
+      setEditingId(null);
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Failed!" });
     }
   };
 
@@ -98,7 +133,7 @@ const DeckDetailScreen = () => {
             cards.map((card) => (
               <View
                 key={card.flashcardId}
-                className="mb-4 p-4 rounded-xl bg-blue-100 shadow"
+                className="mb-4 p-4 rounded-2xl bg-white shadow border border-gray-200"
               >
                 <Text className="font-semibold text-base text-black">
                   Front: {card.frontText}
@@ -106,6 +141,25 @@ const DeckDetailScreen = () => {
                 <Text className="text-gray-700 mt-1">
                   Back: {card.backText}
                 </Text>
+
+                <View className="flex-row justify-end gap-4 mt-3">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEditingId(card.flashcardId);
+                      setEditFrontText(card.frontText);
+                      setEditBackText(card.backText);
+                    }}
+                    className="bg-blue-100 px-3 py-1 rounded-full"
+                  >
+                    <Text className="text-blue-600 font-bold">Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteCard(card.flashcardId)}
+                    className="bg-red-100 px-3 py-1 rounded-full"
+                  >
+                    <Text className="text-red-600 font-bold">Delete</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             ))
           )}
@@ -148,6 +202,43 @@ const DeckDetailScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity onPress={handleAddCard}>
                 <Text className="text-blue-500 font-bold">Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={editingId !== null}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setEditingId(null)}
+      >
+        <View className="flex-1 bg-black/50 justify-center items-center px-6">
+          <View className="bg-white w-full rounded-2xl p-6">
+            <Text className="text-lg font-bold text-center mb-4">
+              Edit Card
+            </Text>
+
+            <TextInput
+              placeholder="Front"
+              value={editFrontText}
+              onChangeText={setEditFrontText}
+              className="border border-gray-300 rounded-lg px-4 py-2 mb-3"
+            />
+            <TextInput
+              placeholder="Back"
+              value={editBackText}
+              onChangeText={setEditBackText}
+              className="border border-gray-300 rounded-lg px-4 py-2 mb-4"
+            />
+
+            <View className="flex-row justify-end gap-3">
+              <TouchableOpacity onPress={() => setEditingId(null)}>
+                <Text className="text-gray-500 font-semibold">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleUpdateCard}>
+                <Text className="text-blue-500 font-bold">Update</Text>
               </TouchableOpacity>
             </View>
           </View>

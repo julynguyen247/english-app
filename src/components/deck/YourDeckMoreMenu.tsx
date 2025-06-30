@@ -5,12 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 interface DeckMoreMenuProps {
   deckStatus: "public" | "private";
   onToggleStatus: (newStatus: "public" | "private") => void;
+  onDeleteDeck: () => void;
   onClose: () => void;
 }
 
 const YourDeckMoreMenu: React.FC<DeckMoreMenuProps> = ({
   deckStatus,
   onToggleStatus,
+  onDeleteDeck,
   onClose,
 }) => {
   const nextStatus = deckStatus === "public" ? "private" : "public";
@@ -29,7 +31,7 @@ const YourDeckMoreMenu: React.FC<DeckMoreMenuProps> = ({
         borderTopRightRadius: 16,
         paddingVertical: 16,
         paddingHorizontal: 24,
-        minHeight: 180,
+        minHeight: 220,
       }}
     >
       <View
@@ -59,6 +61,25 @@ const YourDeckMoreMenu: React.FC<DeckMoreMenuProps> = ({
         />
         <Text style={{ fontSize: 16, fontWeight: "500", color: "#333" }}>
           {label}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={onDeleteDeck}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingVertical: 12,
+        }}
+      >
+        <Ionicons
+          name="trash-bin-outline"
+          size={20}
+          color="#e11d48"
+          style={{ marginRight: 12 }}
+        />
+        <Text style={{ fontSize: 16, fontWeight: "500", color: "#e11d48" }}>
+          Delete this deck
         </Text>
       </TouchableOpacity>
 

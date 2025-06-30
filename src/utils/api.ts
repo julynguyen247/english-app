@@ -227,3 +227,18 @@ export const getUserHistoryExamAPI = async (
   });
   return res;
 };
+export const deleteFlashcardAPI = async (id: number) => {
+  const response = await axios.delete(`/api/deleteflashcard/${id}`);
+  return response;
+};
+export const updateFlashcardAPI = async (
+  id: number,
+  frontText: string,
+  backText: string
+) => {
+  const response = await axios.put(`/api/updateflashcard/${id}`, {
+    frontText,
+    backText,
+  });
+  return response;
+};

@@ -89,6 +89,7 @@ const HistoryScreen = () => {
               flexDirection: "row",
               alignItems: "center",
               marginBottom: 16,
+              marginTop: 32,
             }}
           >
             <TouchableOpacity onPress={() => router.back()}>
@@ -103,6 +104,7 @@ const HistoryScreen = () => {
                 fontSize: 20,
                 fontWeight: "bold",
                 marginLeft: 12,
+
                 color: APP_COLOR.TEXT_PRIMARY,
               }}
             >

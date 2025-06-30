@@ -69,6 +69,14 @@ const SavedDecksScreen = () => {
       >
         <View className="bg-white rounded-2xl px-6 py-6 shadow-md min-h-[75vh]">
           <View className="items-center mb-6">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="self-end"
+            >
+              <Text className="text-blue-400 font-bold text-base mr-1">
+                Done
+              </Text>
+            </TouchableOpacity>
             <Ionicons name="bookmark-outline" size={48} color="#3b82f6" />
             <Text className="text-black font-bold text-2xl mt-2">
               Saved Decks
@@ -91,7 +99,7 @@ const SavedDecksScreen = () => {
                 className="flex-row items-center mb-5"
                 onPress={() =>
                   router.push({
-                    pathname: "/(user)/cards",
+                    pathname: "/(user)/SaveDeckCard",
                     params: {
                       id: deck.id.toString(),
                       name: deck.name,

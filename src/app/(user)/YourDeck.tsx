@@ -32,6 +32,7 @@ const DeckScreen = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDeckId, setSelectedDeckId] = useState<number | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+
   const fetchDecks = async () => {
     if (!appState?.userId) return;
     try {
@@ -47,7 +48,7 @@ const DeckScreen = () => {
 
   useEffect(() => {
     fetchDecks();
-  }, [appState]);
+  }, []);
 
   const handleCreateDeck = async () => {
     if (!deckName.trim()) {
@@ -74,6 +75,8 @@ const DeckScreen = () => {
       Toast.show({ type: "error", text1: "Failed to create deck." });
     }
   };
+
+  const handleDeleteDeck = async () => {};
 
   return (
     <LinearGradient
@@ -181,6 +184,7 @@ const DeckScreen = () => {
           </View>
         </View>
       </Modal>
+
       <Modal
         visible={menuVisible}
         animationType="slide"
@@ -225,6 +229,7 @@ const DeckScreen = () => {
                 setMenuVisible(false);
               }
             }}
+            onDeleteDeck={handleDeleteDeck}
             onClose={() => setMenuVisible(false)}
           />
         </TouchableOpacity>
