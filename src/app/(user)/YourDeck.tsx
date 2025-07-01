@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,10 +11,15 @@ import {
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { APP_COLOR } from "@/utils/constant";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useCurrentApp } from "../context/appContext";
-import { addDeckAPI, getOwnDecksAPI, updateDeckStatusAPI } from "@/utils/api";
+import {
+  addDeckAPI,
+  deleteDeckAPI,
+  getOwnDecksAPI,
+  updateDeckStatusAPI,
+} from "@/utils/api";
 import YourDeckMoreMenu from "@/components/deck/YourDeckMoreMenu";
 
 interface IDeck {
@@ -46,10 +51,11 @@ const DeckScreen = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDecks();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchDecks();
+    }, [])
+  );
   const handleCreateDeck = async () => {
     if (!deckName.trim()) {
       Toast.show({ type: "error", text1: "Deck name cannot be empty." });
@@ -67,16 +73,37 @@ const DeckScreen = () => {
 
     try {
       await addDeckAPI(deckName.trim(), appState.userId);
+
       Toast.show({ type: "success", text1: "Created Deck Successfully!" });
       setDeckName("");
       setModalVisible(false);
-      fetchDecks();
+      await fetchDecks();
     } catch (err) {
       Toast.show({ type: "error", text1: "Failed to create deck." });
     }
   };
 
-  const handleDeleteDeck = async () => {};
+  const handleDeleteDeck = async () => {
+    if (!selectedDeckId) return;
+
+    try {
+      await deleteDeckAPI(selectedDeckId);
+      Toast.show({
+        type: "success",
+        text1: "Deck deleted successfully",
+      });
+
+      await fetchDecks();
+      setMenuVisible(false);
+    } catch (error) {
+      console.error("Delete deck error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to delete deck",
+      });
+      setMenuVisible(false);
+    }
+  };
 
   return (
     <LinearGradient

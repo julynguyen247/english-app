@@ -9,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_COLOR } from "@/utils/constant";
-import { getAllSavedDecksAPI } from "@/utils/api";
+import { getAllSavedDecksAPI, saveDeckAPI } from "@/utils/api";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { useCurrentApp } from "../context/appContext";
@@ -53,6 +53,16 @@ const SavedDecksScreen = () => {
     fetchSavedDecks();
   }, [appState]);
 
+  const handleUnsave = async (deckId: number) => {
+    try {
+      await saveDeckAPI(deckId);
+      Toast.show({ type: "success", text1: "Deck unsaved!" });
+      setDecks((prev) => prev.filter((d) => d.id !== deckId));
+    } catch (err) {
+      Toast.show({ type: "error", text1: "Failed to unsave deck." });
+    }
+  };
+
   return (
     <LinearGradient
       colors={[APP_COLOR.LIGHT_BLUE, "#fff"]}
@@ -94,27 +104,39 @@ const SavedDecksScreen = () => {
             </Text>
           ) : (
             decks.map((deck) => (
-              <TouchableOpacity
+              <View
                 key={deck.id}
-                className="flex-row items-center mb-5"
-                onPress={() =>
-                  router.push({
-                    pathname: "/(user)/SaveDeckCard",
-                    params: {
-                      id: deck.id.toString(),
-                      name: deck.name,
-                    },
-                  })
-                }
+                className="flex-row items-center justify-between mb-5"
               >
-                <View className="w-20 h-20 bg-blue-200 rounded-lg mr-4" />
-                <View className="justify-center">
-                  <Text className="text-black font-bold">{deck.name}</Text>
-                  <Text className="text-gray-500">
-                    Flashcards: {deck.flashCardNumber}
+                <TouchableOpacity
+                  className="flex-row items-center flex-1"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(user)/SaveDeckCard",
+                      params: {
+                        id: deck.id.toString(),
+                        name: deck.name,
+                      },
+                    })
+                  }
+                >
+                  <View className="w-20 h-20 bg-blue-200 rounded-lg mr-4" />
+                  <View className="justify-center">
+                    <Text className="text-black font-bold">{deck.name}</Text>
+                    <Text className="text-gray-500">
+                      Flashcards: {deck.flashCardNumber}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleUnsave(deck.id)}
+                  className="bg-red-100 px-3 py-1 rounded-full"
+                >
+                  <Text className="text-red-600 font-semibold text-sm">
+                    Unsave
                   </Text>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
             ))
           )}
         </View>

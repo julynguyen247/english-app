@@ -25,7 +25,6 @@ const ExamAnswerScreen = () => {
           Number(sectionId)
         );
         setData(res);
-        console.log(res.transcript);
       } catch (err) {
         console.error("Error loading exam answer result", err);
       } finally {
@@ -59,7 +58,7 @@ const ExamAnswerScreen = () => {
         <Text style={tw`text-xl font-bold mb-3`}>Transcript</Text>
         <View style={tw`bg-gray-100 p-3 rounded-lg`}>
           <Text style={tw`text-gray-700 text-sm leading-5`}>
-            {data.transcript}
+            {data.transript}
           </Text>
         </View>
       </View>

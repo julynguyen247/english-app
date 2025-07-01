@@ -242,3 +242,7 @@ export const updateFlashcardAPI = async (
   });
   return response;
 };
+export const deleteDeckAPI = async (deckId: number) => {
+  const response = await axios.delete(`/api/deleteDeck/${deckId}`);
+  return response;
+};

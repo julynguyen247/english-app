@@ -155,7 +155,7 @@ declare global {
   }
 
   export interface IExamAnswerResponse {
-    transcript: string;
+    transript: string;
     detailedResults: IAnswerDetail[];
   }
   export interface IExam {

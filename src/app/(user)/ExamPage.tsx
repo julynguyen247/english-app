@@ -55,7 +55,14 @@ const ExamPage = () => {
 
     if (examId) fetchData();
   }, [examId]);
-
+  useEffect(() => {
+    if (!loading && !submitted && sections.length > 0 && !playingUrl) {
+      const firstAudioSection = sections.find((s) => s.audioUrl?.trim());
+      if (firstAudioSection?.audioUrl) {
+        autoPlayAudio(firstAudioSection.audioUrl);
+      }
+    }
+  }, [loading, sections]);
   useEffect(() => {
     if (loading || submitted) return;
     const timer = setInterval(() => {
@@ -141,21 +148,8 @@ const ExamPage = () => {
     }
   };
 
-  const playAudio = async (url: string) => {
+  const autoPlayAudio = async (url: string) => {
     try {
-      if (playingUrl === url && sound) {
-        const status = await sound.getStatusAsync();
-        if (status.isLoaded && status.isPlaying) {
-          await sound.pauseAsync();
-          setPlayingUrl(null);
-          return;
-        } else if (status.isLoaded && !status.isPlaying) {
-          await sound.playAsync();
-          setPlayingUrl(url);
-          return;
-        }
-      }
-
       if (sound) {
         await sound.unloadAsync();
         setSound(null);
@@ -167,15 +161,16 @@ const ExamPage = () => {
       );
 
       newSound.setOnPlaybackStatusUpdate((status) => {
-        if (!status.isLoaded) return;
-        if (status.didJustFinish) setPlayingUrl(null);
+        if (status.isLoaded && status.didJustFinish) {
+          setPlayingUrl(null);
+        }
       });
 
       setSound(newSound);
       setPlayingUrl(url);
     } catch (err) {
       setPlayingUrl(null);
-      Toast.show({ type: "error", text1: "Không thể phát audio" });
+      Toast.show({ type: "error", text1: "Không thể phát audio tự động" });
     }
   };
 
@@ -278,13 +273,9 @@ const ExamPage = () => {
                   <Text style={{ fontWeight: "600", marginBottom: 8 }}>
                     Audio:
                   </Text>
-                  <TouchableOpacity onPress={() => playAudio(section.audioUrl)}>
-                    <Text style={{ color: APP_COLOR.PRIMARY_BLUE }}>
-                      {playingUrl === section.audioUrl
-                        ? "⏸ Pause"
-                        : "▶ Play audio"}
-                    </Text>
-                  </TouchableOpacity>
+                  <Text style={{ color: APP_COLOR.PRIMARY_BLUE }}>
+                    🔊 audio playing...
+                  </Text>
                 </View>
               ) : section.transcript?.trim() ? (
                 <View

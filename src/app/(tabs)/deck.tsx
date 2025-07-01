@@ -146,8 +146,11 @@ const CardTab = () => {
                   <TouchableOpacity
                     onPress={() =>
                       router.push({
-                        pathname: "/(user)/learnCard",
-                        params: { categoryId: deck.id.toString() },
+                        pathname: "/(user)/SaveDeckCard",
+                        params: {
+                          id: deck.id.toString(),
+                          name: deck.name,
+                        },
                       })
                     }
                   >
