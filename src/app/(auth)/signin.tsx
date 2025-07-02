@@ -1,37 +1,39 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  Animated,
-  Dimensions,
-  Image,
   Text,
   TextInput,
+  Image,
   TouchableOpacity,
   ActivityIndicator,
+  Animated,
+  Dimensions,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { APP_COLOR } from "@/utils/constant";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import tw from "twrnc";
-import Toast from "react-native-toast-message";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { login } from "@/utils/api";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import tw from "twrnc";
+
+import { APP_COLOR } from "@/utils/constant";
+import { login } from "@/utils/api";
+import { Ionicons } from "@expo/vector-icons";
 
 const { height: screenHeight } = Dimensions.get("window");
 const modalHeight = screenHeight * 0.9;
-const avatar = require("@/assets/auth/Icon/avatar.png");
-const googleLogo = require("@/assets/auth/Icon/google.png");
-const facebookLogo = require("@/assets/auth/Icon/fb.png");
 
 const SignIn = () => {
+  const router = useRouter();
   const slideAnim = useRef(new Animated.Value(-modalHeight)).current;
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const isButtonActive = username.length > 0 && password.length > 0;
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -40,8 +42,6 @@ const SignIn = () => {
       useNativeDriver: true,
     }).start();
   }, []);
-
-  const isButtonActive = username.length > 0 && password.length > 0;
 
   const handleSignIn = async () => {
     if (!username || !password) {
@@ -71,26 +71,26 @@ const SignIn = () => {
 
   const handleOAuthLogin = async (provider: "google" | "facebook") => {
     const redirectUrl = AuthSession.makeRedirectUri({ useProxy: true } as any);
+    console.log(redirectUrl);
     const baseUrl =
       "https://englishapp-api-165787629721.asia-southeast1.run.app";
     const url =
       provider === "google"
-        ? `${baseUrl}/api/Authentication/signin-google?returnUrl=${encodeURIComponent(
+        ? `${baseUrl}/api/Authentication/signin-google?redirectUrl=${encodeURIComponent(
             redirectUrl
           )}`
-        : `${baseUrl}/api/Authentication/login-facebook?returnUrl=${encodeURIComponent(
+        : `${baseUrl}/api/Authentication/login-facebook?redirectUrl=${encodeURIComponent(
             redirectUrl
           )}`;
 
     const result = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
-
     if (result.type !== "success" || !result.url.includes("access_token")) {
       Toast.show({ type: "error", text1: `Login with ${provider} failed` });
       return;
     }
 
     const tokenMatch = result.url.match(/access_token=([^&]+)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
+    const token = tokenMatch?.[1];
 
     if (!token) {
       Toast.show({ type: "error", text1: "Invalid token" });
@@ -107,8 +107,6 @@ const SignIn = () => {
       <LinearGradient
         colors={[APP_COLOR.SKY_BLUE, APP_COLOR.BACKGROUND]}
         style={tw`flex-1`}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
       >
         <Animated.View
           style={[
@@ -124,158 +122,92 @@ const SignIn = () => {
           ]}
         >
           <View style={tw`w-full items-center mt-10`}>
-            <Image source={avatar} style={tw`mt-5 mb-5`} />
-            <Text
-              style={{
-                fontSize: 24,
-                fontWeight: "bold",
-                color: APP_COLOR.TEXT_PRIMARY,
-              }}
-            >
-              Login
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                textAlign: "center",
-                marginTop: 8,
-                paddingHorizontal: 40,
-                color: APP_COLOR.TEXT_SECONDARY,
-              }}
-            >
+            <Image source={require("@/assets/auth/Icon/avatar.png")} />
+            <Text style={tw`text-xl font-bold text-gray-800 mt-4`}>Login</Text>
+            <Text style={tw`text-sm text-center text-gray-500 mt-2 px-10`}>
               Enter the username and password you used when you created your
-              account to log in.
+              account.
             </Text>
           </View>
 
           <View style={tw`w-full items-center mt-10`}>
             <TextInput
               placeholder="Username"
-              style={{
-                width: "85%",
-                height: 50,
-                backgroundColor: "#F5F5F5",
-                borderRadius: 10,
-                paddingHorizontal: 16,
-                marginBottom: 12,
-                color: APP_COLOR.TEXT_PRIMARY,
-              }}
-              placeholderTextColor={"#999"}
+              style={tw`w-11/12 h-12 bg-gray-200 rounded px-4 mb-3 text-gray-800`}
+              placeholderTextColor="#999"
               value={username}
               onChangeText={setUsername}
             />
-            <TextInput
-              placeholder="Password"
-              secureTextEntry={true}
-              style={{
-                width: "85%",
-                height: 50,
-                backgroundColor: "#F5F5F5",
-                borderRadius: 10,
-                paddingHorizontal: 16,
-                marginBottom: 12,
-                color: APP_COLOR.TEXT_PRIMARY,
-              }}
-              placeholderTextColor={"#999"}
-              value={password}
-              onChangeText={setPassword}
-            />
+            <View
+              style={tw`w-11/12 h-12 bg-gray-200 rounded px-4 mb-3 flex-row items-center`}
+            >
+              <TextInput
+                placeholder="Password"
+                secureTextEntry={!showPassword}
+                style={tw`flex-1 text-gray-800`}
+                placeholderTextColor="#999"
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Ionicons
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  color="#555"
+                />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
               onPress={() => router.push("/(auth)/forgotpassword")}
             >
-              <Text
-                style={{
-                  fontSize: 13,
-                  marginTop: 8,
-                  color: APP_COLOR.PRIMARY_BLUE,
-                }}
-              >
+              <Text style={tw`text-sm text-blue-500 mt-2`}>
                 Forgot Password?
               </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={tw`w-full items-center mt-10`}>
+          <View style={tw`w-full items-center mt-8`}>
             <TouchableOpacity
-              style={{
-                width: "80%",
-                height: 50,
-                borderRadius: 10,
-                backgroundColor: isButtonActive
-                  ? APP_COLOR.PRIMARY_BLUE
-                  : APP_COLOR.BUTTON1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={tw`w-4/5 h-12 rounded bg-blue-600 justify-center items-center`}
               onPress={handleSignIn}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text
-                  style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}
-                >
-                  Sign In
-                </Text>
+                <Text style={tw`text-white font-bold text-base`}>Sign In</Text>
               )}
             </TouchableOpacity>
 
-            <View style={tw`w-full items-center mt-6`}>
-              <Text style={{ fontSize: 14, color: "#888" }}>Or</Text>
-              <TouchableOpacity
-                onPress={() => handleOAuthLogin("google")}
-                style={{
-                  width: "80%",
-                  height: 50,
-                  borderRadius: 10,
-                  backgroundColor: "#ccc",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  marginTop: 12,
-                }}
-              >
-                <Image
-                  source={googleLogo}
-                  style={{ width: 20, height: 20, marginRight: 10 }}
-                />
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Sign in with Google
-                </Text>
-              </TouchableOpacity>
+            <Text style={tw`text-sm text-gray-500 mt-4`}>Or</Text>
 
-              <TouchableOpacity
-                onPress={() => handleOAuthLogin("facebook")}
-                style={{
-                  width: "80%",
-                  height: 50,
-                  borderRadius: 10,
-                  backgroundColor: "#4267B2",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  marginTop: 12,
-                }}
-              >
-                <Image
-                  source={facebookLogo}
-                  style={{ width: 20, height: 20, marginRight: 10 }}
-                />
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Sign in with Facebook
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => handleOAuthLogin("google")}
+              style={tw`w-4/5 h-12 rounded bg-gray-300 justify-center items-center flex-row mt-3`}
+            >
+              <Image
+                source={require("@/assets/auth/Icon/google.png")}
+                style={tw`w-5 h-5 mr-2`}
+              />
+              <Text style={tw`text-white font-bold`}>Sign in with Google</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleOAuthLogin("facebook")}
+              style={tw`w-4/5 h-12 rounded bg-blue-700 justify-center items-center flex-row mt-3`}
+            >
+              <Image
+                source={require("@/assets/auth/Icon/fb.png")}
+                style={tw`w-5 h-5 mr-2`}
+              />
+              <Text style={tw`text-white font-bold`}>
+                Sign in with Facebook
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.push("/signup")}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  marginTop: 16,
-                  color: APP_COLOR.PRIMARY_BLUE,
-                }}
-              >
+              <Text style={tw`text-sm text-blue-600 mt-5`}>
                 Don’t have an account?
               </Text>
             </TouchableOpacity>
